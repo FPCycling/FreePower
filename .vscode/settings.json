@@ -1,0 +1,10 @@
+{
+    "launch": {
+        "configurations": [],
+        "compounds": []
+    },
+    "files.exclude": {
+        "**/*.js": {"when": "$(basename).ts"},
+        "**/*.js.map": true
+    }
+}
