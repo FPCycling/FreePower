@@ -7,7 +7,7 @@
 
 <Theme persist theme="g10">
     <Header {segment} />
-    <Content style="background: none; padding: 1rem">
+    <Content style="background: none; padding: 1rem;margin-top:3.5rem">
         <Grid>
             <slot />
         </Grid>

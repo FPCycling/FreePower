@@ -1,32 +1,73 @@
 <script lang="ts">
+    import logo_light from '../../static/logo_light.png';
+    import logo_dark from '../../static/logo_dark.png';
     import { SkipToContent, Header, HeaderUtilities, HeaderGlobalAction } from 'carbon-components-svelte';
-    import UserAvatar20 from 'carbon-icons-svelte/lib/UserAvatar20';
+    import LightIcon from 'carbon-icons-svelte/lib/LightFilled32';
+    import UserAvatar from 'carbon-icons-svelte/lib/UserAvatarFilledAlt32';
+    import DarkIcon from 'carbon-icons-svelte/lib/Moon32';
     import { getContext } from 'svelte';
-    const ctx = getContext('Theme') as any;
-    $: if (ctx) {
-        ctx.updateVar('--cds-productive-heading-06-font-size', '4rem');
+    import type { ThemeContext } from '../types/themes';
+    import type { CarbonIcon } from 'carbon-icons-svelte';
+
+    const { carbon_theme, dark, light } = getContext('Theme') as ThemeContext;
+    let logo: string;
+    let icon: typeof CarbonIcon;
+
+    $: {
+        logo = $dark ? logo_dark : logo_light;
+        icon = $dark ? LightIcon : DarkIcon;
+    }
+
+    function handleDarkModeClick() {
+        carbon_theme.set($light ? 'g90' : 'g10');
     }
 </script>
 
 <style>
     span :global(.bx--header) {
-        background-color: #3f334d;
-        border-bottom: 1px solid #3f334d;
+        background-color: var(--cds-ui-01);
+        border-bottom: none;
+        box-shadow: 0px -3px 10px 0px #32293d;
+        height: 3.5rem;
+    }
+
+    span :global(.bx--header__action > svg) {
+        fill: var(--cds-ui-05);
     }
 
     span :global(a.bx--header__name) {
-        color: #d9457b;
+        display: none;
+    }
+
+    span :global(.bx--header__action) {
+        height: 3.5rem;
+        width: 3.5rem;
+    }
+
+    span :global(.bx--header__action:hover) {
+        background-color: var(--cds-hover-primary);
+    }
+
+    #logo img {
+        height: 2rem;
+    }
+
+    @media only screen and (min-width: 1056px) {
+        #logo {
+            padding-left: 3.5rem;
+        }
     }
 </style>
 
 <span class="bx--header">
-    <Header class="custom-header">
-        <a href="/">Free Power</a>
+    <Header>
+        <a id="logo" href="/"><img alt="logo" src={logo} /></a>
         <div slot="skip-to-content">
             <SkipToContent />
         </div>
         <HeaderUtilities>
-            <HeaderGlobalAction aria-label="User Avatar" icon={UserAvatar20} />
+            <HeaderGlobalAction on:click={handleDarkModeClick} aria-label="Dark mode" {icon} />
+            <HeaderGlobalAction aria-label="User Profile" icon={UserAvatar} />
         </HeaderUtilities>
     </Header>
 </span>
