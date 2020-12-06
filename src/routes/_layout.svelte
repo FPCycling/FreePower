@@ -1,5 +1,5 @@
 <script>
-    export let segment = undefined;
+    export let segment;
     import { Content, Grid } from 'carbon-components-svelte';
     import Header from '../components/Header.svelte';
     import Theme from '../components/Theme.svelte';

@@ -1,15 +1,16 @@
 <script lang="ts">
+    export let segment;
+
     import logo_light from '../../static/logo_light.png';
     import logo_dark from '../../static/logo_dark.png';
     import { SkipToContent, Header, HeaderUtilities, HeaderGlobalAction } from 'carbon-components-svelte';
     import LightIcon from 'carbon-icons-svelte/lib/LightFilled32';
     import UserAvatar from 'carbon-icons-svelte/lib/UserAvatarFilledAlt32';
     import DarkIcon from 'carbon-icons-svelte/lib/Moon32';
-    import { getContext } from 'svelte';
-    import type { ThemeContext } from '../types/themes';
+    import { getThemeContext } from '../contexts/themeContext';
     import type { CarbonIcon } from 'carbon-icons-svelte';
 
-    const { carbon_theme, dark, light } = getContext('Theme') as ThemeContext;
+    const { carbon_theme, dark, light } = getThemeContext();
     let logo: string;
     let icon: typeof CarbonIcon;
 
@@ -17,7 +18,6 @@
         logo = $dark ? logo_dark : logo_light;
         icon = $dark ? LightIcon : DarkIcon;
     }
-
     function handleDarkModeClick() {
         carbon_theme.set($light ? 'g90' : 'g10');
     }
