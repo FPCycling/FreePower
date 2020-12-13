@@ -18,8 +18,26 @@
     let WorkoutChart;
 
     onMount(async () => {
+        const context = new AudioContext();
         const module = await import("../../components/WorkoutChart.svelte");
+
         WorkoutChart = module.default;
+
+        currentWatts.subscribe(() => {
+            if ($currentTime > 0) {
+                const o = context.createOscillator();
+                const g = context.createGain();
+                o.type = "sine";
+                o.connect(g);
+                o.frequency.value = 400;
+                g.connect(context.destination);
+                o.start(0);
+                g.gain.exponentialRampToValueAtTime(
+                    0.00001,
+                    context.currentTime + 1.5
+                );
+            }
+        });
     });
 
     onDestroy(currentTime.pause);
@@ -38,6 +56,10 @@
 <Button on:click={currentTime.start}>Start</Button>
 <Button on:click={currentTime.pause}>Pause</Button>
 <Button kind="danger" on:click={currentTime.reset}>Reset</Button>
+<Button kind="ghost" on:click={() => currentTime.add(10 * 1000)}>
+    +10 sec
+</Button>
+<Button kind="ghost" on:click={() => currentTime.add(60 * 1000)}>+1 min</Button>
 <Button kind="ghost" on:click={() => currentTime.add(5 * 60 * 1000)}>
     +5 min
 </Button>

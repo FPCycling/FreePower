@@ -8,7 +8,7 @@
 
     let el;
 
-    let width: number;
+    let width = 200;
     const height = 300;
 
     let xPath: string;

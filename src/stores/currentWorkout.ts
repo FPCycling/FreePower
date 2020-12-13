@@ -106,6 +106,6 @@ export const nextInterval = derived([currentWorkout, currentTime], ([$currentWor
     return {
         nextWatts: nextActive.watts,
         at: nextActive.startMs,
-        in: nextActive.startMs - $currentTime,
+        in: nextActive.startMs - $currentTime + 1000,
     };
 });

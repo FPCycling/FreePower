@@ -1,14 +1,19 @@
 <script lang="ts">
     export let segment;
 
-    import logo_light from '../../static/logo_light.png';
-    import logo_dark from '../../static/logo_dark.png';
-    import { SkipToContent, Header, HeaderUtilities, HeaderGlobalAction } from 'carbon-components-svelte';
-    import LightIcon from 'carbon-icons-svelte/lib/LightFilled32';
-    import UserAvatar from 'carbon-icons-svelte/lib/UserAvatarFilledAlt32';
-    import DarkIcon from 'carbon-icons-svelte/lib/Moon32';
-    import { getThemeContext } from '../contexts/themeContext';
-    import type { CarbonIcon } from 'carbon-icons-svelte';
+    import logo_light from "../../static/logo_light.png";
+    import logo_dark from "../../static/logo_dark.png";
+    import {
+        SkipToContent,
+        Header,
+        HeaderUtilities,
+        HeaderGlobalAction,
+    } from "carbon-components-svelte";
+    import LightIcon from "carbon-icons-svelte/lib/LightFilled32";
+    import UserAvatar from "carbon-icons-svelte/lib/UserAvatarFilledAlt32";
+    import DarkIcon from "carbon-icons-svelte/lib/Moon32";
+    import { getThemeContext } from "../contexts/themeContext";
+    import type { CarbonIcon } from "carbon-icons-svelte";
 
     const { carbon_theme, dark, light } = getThemeContext();
     let logo: string;
@@ -19,7 +24,7 @@
         icon = $dark ? LightIcon : DarkIcon;
     }
     function handleDarkModeClick() {
-        carbon_theme.set($light ? 'g90' : 'g10');
+        carbon_theme.set($light ? "g90" : "g10");
     }
 </script>
 
@@ -66,7 +71,10 @@
             <SkipToContent />
         </div>
         <HeaderUtilities>
-            <HeaderGlobalAction on:click={handleDarkModeClick} aria-label="Dark mode" {icon} />
+            <HeaderGlobalAction
+                on:click={handleDarkModeClick}
+                aria-label="Dark mode"
+                {icon} />
             <HeaderGlobalAction aria-label="User Profile" icon={UserAvatar} />
         </HeaderUtilities>
     </Header>
