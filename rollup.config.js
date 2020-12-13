@@ -18,6 +18,9 @@ const legacy = !!process.env.SAPPER_LEGACY_BUILD;
 const onwarn = (warning, onwarn) =>
     (warning.code === 'MISSING_EXPORT' && /'preload'/.test(warning.message)) ||
     (warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]@sapper[/\\]/.test(warning.message)) ||
+    (warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]d3-selection[/\\]/.test(warning.message)) ||
+    (warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]d3-transition[/\\]/.test(warning.message)) ||
+    (warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]d3-interpolate[/\\]/.test(warning.message)) ||
     warning.code === 'THIS_IS_UNDEFINED' ||
     onwarn(warning);
 

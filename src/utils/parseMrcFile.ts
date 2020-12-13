@@ -41,6 +41,7 @@ function parseData(file: string): WorkoutData[] {
                 return {
                     startMs: Number(split[0]) * 60000,
                     percentFtp: Number(split[1]),
+                    watts: 0,
                 };
             },
         );

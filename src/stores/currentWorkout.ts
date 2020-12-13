@@ -1,6 +1,18 @@
-import { writable, derived } from 'svelte/store';
+import type dayjs from 'dayjs';
+import { writable, derived, Writable } from 'svelte/store';
 import type { Workout } from '../types/workout';
 import { userFtp } from './userSettings';
+
+export interface InnerWorkout {
+    date: dayjs.Dayjs;
+    description: string;
+    workoutData: InnerWorkoutData[];
+}
+
+export interface InnerWorkoutData {
+    startMs: number;
+    percentFtp: number;
+}
 
 let initialWorkout = undefined;
 
@@ -9,13 +21,31 @@ if (typeof window !== 'undefined' && window.localStorage) {
     initialWorkout = initialWorkoutString ? JSON.parse(initialWorkoutString) : undefined;
 }
 
-export const currentWorkout = writable<Workout | undefined>(initialWorkout);
-
-currentWorkout.subscribe((workout) => {
+const innerCurrentWorkout = writable<InnerWorkout | undefined>(initialWorkout);
+innerCurrentWorkout.subscribe((workout) => {
     if (typeof window !== 'undefined' && window.localStorage) {
         localStorage.setItem('currentWorkout', JSON.stringify(workout));
     }
 });
+
+export const currentWorkout = derived<[Writable<number>, Writable<InnerWorkout>], Workout | undefined>(
+    [userFtp, innerCurrentWorkout],
+    ([$userFtp, $currentWorkout]) => {
+        if (!$currentWorkout) {
+            return undefined;
+        }
+
+        return {
+            date: $currentWorkout.date,
+            description: $currentWorkout.description,
+            workoutData: $currentWorkout.workoutData.map((data) => ({
+                percentFtp: data.percentFtp,
+                startMs: data.startMs,
+                watts: Math.round((data.percentFtp / 100) * $userFtp),
+            })),
+        };
+    },
+);
 
 function createCurrentTime() {
     const { subscribe, set, update } = writable(0);
@@ -46,42 +76,36 @@ function createCurrentTime() {
 
 export const currentTime = createCurrentTime();
 
-export const currentFtpValue = derived(
-    [userFtp, currentWorkout, currentTime],
-    ([$userFtp, $currentWorkout, $currentTime]) => {
-        if (!$currentWorkout) {
-            return 0;
-        }
+export const currentWatts = derived([currentWorkout, currentTime], ([$currentWorkout, $currentTime]) => {
+    if (!$currentWorkout) {
+        return 0;
+    }
 
-        const actives = $currentWorkout.workoutData.filter((data) => data.startMs < $currentTime);
+    const actives = $currentWorkout.workoutData.filter((data) => data.startMs < $currentTime);
 
-        const currentlyActive = actives.length ? actives[actives.length - 1] : $currentWorkout.workoutData[0];
+    const currentlyActive = actives.length ? actives[actives.length - 1] : $currentWorkout.workoutData[0];
 
-        return (currentlyActive.percentFtp / 100) * $userFtp;
-    },
-);
+    return currentlyActive.watts;
+});
 
-export const nextInterval = derived(
-    [userFtp, currentWorkout, currentTime],
-    ([$userFtp, $currentWorkout, $currentTime]) => {
-        if (!$currentWorkout) {
-            return {
-                nextFtp: 0,
-                at: 0,
-                in: 0,
-            };
-        }
-
-        const actives = $currentWorkout.workoutData.filter((data) => data.startMs < $currentTime);
-
-        const nextIndex = actives.length === $currentWorkout.workoutData.length ? actives.length - 1 : actives.length;
-
-        const nextActive = $currentWorkout.workoutData[nextIndex];
-
+export const nextInterval = derived([currentWorkout, currentTime], ([$currentWorkout, $currentTime]) => {
+    if (!$currentWorkout) {
         return {
-            nextFtp: (nextActive.percentFtp / 100) * $userFtp,
-            at: nextActive.startMs,
-            in: nextActive.startMs - $currentTime,
+            nextWatts: 0,
+            at: 0,
+            in: 0,
         };
-    },
-);
+    }
+
+    const actives = $currentWorkout.workoutData.filter((data) => data.startMs < $currentTime);
+
+    const nextIndex = actives.length === $currentWorkout.workoutData.length ? actives.length - 1 : actives.length;
+
+    const nextActive = $currentWorkout.workoutData[nextIndex];
+
+    return {
+        nextWatts: nextActive.watts,
+        at: nextActive.startMs,
+        in: nextActive.startMs - $currentTime,
+    };
+});

@@ -9,6 +9,7 @@ export interface Workout {
 export interface WorkoutData {
     startMs: number;
     percentFtp: number;
+    watts: number;
 }
 
 export enum WorkoutStatus {
