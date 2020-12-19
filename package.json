@@ -10,7 +10,6 @@
         "validate": "svelte-check --ignore src/node_modules/@sapper"
     },
     "dependencies": {
-        "@types/d3": "^6.2.0",
         "compression": "^1.7.1",
         "dayjs": "^1.9.7",
         "polka": "next",
@@ -30,8 +29,10 @@
         "@rollup/plugin-url": "^5.0.0",
         "@tsconfig/svelte": "^1.0.10",
         "@types/compression": "^1.7.0",
+        "@types/d3": "^6.2.0",
         "@types/node": "^14.11.1",
         "@types/polka": "^0.5.1",
+        "@types/web-bluetooth": "^0.0.9",
         "carbon-components-svelte": "^0.25.1",
         "carbon-icons-svelte": "^10.21.0",
         "d3": "^6.3.1",

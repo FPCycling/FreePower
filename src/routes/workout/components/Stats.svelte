@@ -4,6 +4,7 @@
         currentTime,
         nextInterval,
     } from "../stores/currentWorkout";
+    import { heartRate } from "../../../stores/heartRate";
     import { toTimeFormat } from "../../../utils/time";
     import { Grid, Row, Column } from "carbon-components-svelte";
     import LargeTile from "../../../components/LargeTile.svelte";
@@ -29,7 +30,7 @@
             </LargeTile>
         </Column>
         <Column>
-            <LargeTile title="Heart rate">177</LargeTile>
+            <LargeTile title="Heart rate">{$heartRate}</LargeTile>
         </Column>
     </Row>
 

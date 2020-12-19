@@ -1,6 +1,6 @@
 <script lang="ts">
     export let title: string;
-    export let subTitle: string;
+    export let subTitle: string = undefined;
 </script>
 
 <style>
@@ -8,6 +8,7 @@
         text-transform: uppercase;
         color: var(--neutral-5);
         font-weight: bold;
+        margin-bottom: -1rem;
     }
     .content {
         font-weight: bold;
