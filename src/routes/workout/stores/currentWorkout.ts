@@ -1,7 +1,7 @@
 import type dayjs from 'dayjs';
 import { writable, derived, Writable } from 'svelte/store';
-import type { Workout } from '../types/workout';
-import { userFtp } from './userSettings';
+import { userFtp } from '../../../stores/userSettings';
+import type { Workout } from '../../../types/workout';
 
 export interface InnerWorkout {
     date: dayjs.Dayjs;

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { WorkoutData } from "../types/workout";
+    import type { WorkoutData } from "../../../types/workout";
     import { line, curveStepAfter, scaleLinear, extent, scaleTime } from "d3";
     import type { Line, ScaleTime, ScaleLinear } from "d3";
 
