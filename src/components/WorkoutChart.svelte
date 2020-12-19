@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { WorkoutData } from "../types/workout";
-    import { line, curveLinear, scaleLinear, extent, scaleTime } from "d3";
+    import { line, curveStepAfter, scaleLinear, extent, scaleTime } from "d3";
     import type { Line, ScaleTime, ScaleLinear } from "d3";
 
     export let data: WorkoutData[];
@@ -32,7 +32,7 @@
         workoutPath = line<WorkoutData>()
             .x((d) => xScale(d.startMs))
             .y((d) => yScale(d.watts))
-            .curve(curveLinear);
+            .curve(curveStepAfter);
 
         yTicks = [];
         for (let i = extentY[0]; i < extentY[1]; i += 30) {

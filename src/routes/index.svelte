@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Button } from 'carbon-components-svelte';
-    import { FileUploader } from 'carbon-components-svelte';
-    import { parseMrcFile } from '../utils/parseMrcFile';
-    import { currentWorkout } from '../stores/currentWorkout';
-    import { goto } from '@sapper/app';
+    import { Button } from "carbon-components-svelte";
+    import { FileUploader } from "carbon-components-svelte";
+    import { parseMrcFile } from "../utils/parseMrcFile";
+    import { writableCurrentWorkout } from "../stores/currentWorkout";
+    import { goto } from "@sapper/app";
 
     let files: string[] = [];
 
@@ -18,8 +18,8 @@
     }
 
     async function handleFileSelected(file: string) {
-        currentWorkout.set(parseMrcFile(file));
-        goto('/workout');
+        writableCurrentWorkout.set(parseMrcFile(file));
+        goto("/workout");
     }
 </script>
 
@@ -32,5 +32,7 @@
     status="complete" />
 
 {#each files as file}
-    <Button on:click={() => handleFileSelected(file)}>Select as current workout</Button>
+    <Button on:click={() => handleFileSelected(file)}>
+        Select as current workout
+    </Button>
 {/each}

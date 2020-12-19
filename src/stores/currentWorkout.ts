@@ -21,15 +21,15 @@ if (typeof window !== 'undefined' && window.localStorage) {
     initialWorkout = initialWorkoutString ? JSON.parse(initialWorkoutString) : undefined;
 }
 
-const innerCurrentWorkout = writable<InnerWorkout | undefined>(initialWorkout);
-innerCurrentWorkout.subscribe((workout) => {
+export const writableCurrentWorkout = writable<InnerWorkout | undefined>(initialWorkout);
+writableCurrentWorkout.subscribe((workout) => {
     if (typeof window !== 'undefined' && window.localStorage) {
         localStorage.setItem('currentWorkout', JSON.stringify(workout));
     }
 });
 
 export const currentWorkout = derived<[Writable<number>, Writable<InnerWorkout>], Workout | undefined>(
-    [userFtp, innerCurrentWorkout],
+    [userFtp, writableCurrentWorkout],
     ([$userFtp, $currentWorkout]) => {
         if (!$currentWorkout) {
             return undefined;
@@ -99,13 +99,16 @@ export const nextInterval = derived([currentWorkout, currentTime], ([$currentWor
 
     const actives = $currentWorkout.workoutData.filter((data) => data.startMs < $currentTime);
 
-    const nextIndex = actives.length === $currentWorkout.workoutData.length ? actives.length - 1 : actives.length;
+    const nextIndex = Math.max(
+        actives.length === $currentWorkout.workoutData.length ? actives.length - 1 : actives.length,
+        1,
+    );
 
     const nextActive = $currentWorkout.workoutData[nextIndex];
 
     return {
         nextWatts: nextActive.watts,
         at: nextActive.startMs,
-        in: nextActive.startMs - $currentTime + 1000,
+        in: Math.max(nextActive.startMs - $currentTime + 999, 0),
     };
 });

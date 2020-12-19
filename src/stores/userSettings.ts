@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-let initialFtp = 308;
+let initialFtp = 314;
 
 if (typeof window !== 'undefined' && window.localStorage) {
     initialFtp = Number(localStorage.getItem('userFtp'));
