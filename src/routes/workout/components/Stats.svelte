@@ -5,6 +5,7 @@
         nextInterval,
     } from "../stores/currentWorkout";
     import { heartRate } from "../../../stores/heartRate";
+    import { trainerMetrics } from "../../../stores/trainer";
     import { toTimeFormat } from "../../../utils/time";
     import { Grid, Row, Column } from "carbon-components-svelte";
     import LargeTile from "../../../components/LargeTile.svelte";
@@ -20,7 +21,7 @@
 <Grid class="statsGrid" noGutter condensed>
     <Row>
         <Column>
-            <LargeTile title="Power">240</LargeTile>
+            <LargeTile title="Power">{$trainerMetrics.power}</LargeTile>
         </Column>
         <Column>
             <LargeTile
@@ -42,7 +43,7 @@
             <LargeTile title="Time">{toTimeFormat($currentTime)}</LargeTile>
         </Column>
         <Column>
-            <LargeTile title="Cadence">95</LargeTile>
+            <LargeTile title="Cadence">{$trainerMetrics.cadence}</LargeTile>
         </Column>
     </Row>
 </Grid>

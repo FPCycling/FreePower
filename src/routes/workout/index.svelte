@@ -10,6 +10,7 @@
     import Stats from "./components/Stats.svelte";
     import { Button } from "carbon-components-svelte";
     import { handlePairHrClick } from "../../stores/heartRate";
+    import { handlePairTrainerClick } from "../../stores/trainer";
 
     let Chart: any;
 
@@ -28,6 +29,7 @@
     onDestroy(currentTime.pause);
 </script>
 
+<!-- svelte-ignore missing-declaration -->
 <style>
     .controlsContainer {
         display: flex;
@@ -43,6 +45,7 @@
         <Controls />
     </div>
     <div>
+        <Button on:click={handlePairTrainerClick}>Pair Trainer</Button>
         <Button on:click={handlePairHrClick}>Pair HR</Button>
     </div>
 </div>

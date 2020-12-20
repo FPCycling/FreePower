@@ -1,3 +1,5 @@
+/// <reference types="../../node_modules/@types/web-bluetooth" />
+
 import { derived, writable } from 'svelte/store';
 import { parseHeartRate } from '../utils/bluetooth';
 
@@ -8,7 +10,7 @@ export const heartRate = derived([_heartRate], ([$_heartRate]) => {
 });
 
 export function handlePairHrClick() {
-    (navigator as any).bluetooth
+    navigator.bluetooth
         .requestDevice({ filters: [{ services: ['heart_rate'] }] })
         .then((device) => device.gatt.connect())
         .then((server) => {
