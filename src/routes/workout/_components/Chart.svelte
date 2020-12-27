@@ -5,12 +5,11 @@
         curveStepAfter,
         scaleLinear,
         extent,
-        scaleTime,
         bisector,
         select,
         pointer,
     } from "d3";
-    import type { Line, ScaleTime, ScaleLinear, NumberValue } from "d3";
+    import type { Line, ScaleLinear, NumberValue, Selection } from "d3";
     import { onMount } from "svelte";
     import { formatMs } from "../../../utils/time";
 
@@ -64,15 +63,23 @@
             startMs,
             1
         );
-        return data[index - 1];
+        const nextInterval = data[index];
+        const currentInterval = data[index - 1];
+        return {
+            watts: currentInterval.watts,
+            duration: nextInterval.startMs - currentInterval.startMs,
+        };
     }
 
-    function displayTooltip(g, value: string) {
+    function displayTooltip(
+        g: Selection<SVGGElement, unknown, null, undefined>,
+        pointerY: number,
+        tooltipY: number,
+        value: string
+    ) {
         if (!value) return g.style("display", "none");
 
-        g.style("display", null)
-            .style("pointer-events", "none")
-            .style("font", "10px sans-serif");
+        g.style("display", null);
 
         const path = g
             .selectAll("path")
@@ -96,27 +103,48 @@
                     .text((d) => d)
             );
 
-        const { y, width: w, height: h } = text.node().getBBox();
+        const { y, width: w, height: h } = (text.node() as any).getBBox();
 
-        text.attr("transform", `translate(${-w / 2},${15 - y})`);
-        path.attr(
-            "d",
-            `M${-w / 2 - 10},5H-5l5,-5l5,5H${w / 2 + 10}v${h + 20}h-${w + 20}z`
-        );
+        if (tooltipY > pointerY) {
+            text.attr("transform", `translate(${-w / 2},${15 - y})`);
+            path.attr(
+                "d",
+                `M${-w / 2 - 10} 5 H -5 l 5 -5 l 5 5 H ${w / 2 + 10} v ${
+                    h + 20
+                } h-${w + 20}z`
+            );
+        } else {
+            text.attr("transform", `translate(${-w / 2},-${22 - y})`);
+            path.attr(
+                "d",
+                `M${-w / 2 - 10} -5 H -5 l 5 5 l 5 -5 H${w / 2 + 10} v -${
+                    h + 20
+                } h -${w + 20}z`
+            );
+        }
     }
 
     onMount(() => {
         const svg = select(el);
-        const tooltip = svg.append("g");
+        const tooltip = svg.append("g").attr("class", "tooltip");
 
         svg.on("touchmove mousemove", function (event) {
-            const pointerX = pointer(event, this)[0];
-            const { watts } = bisect(pointerX);
-            const startMs = xScale.invert(pointerX);
+            const pointerData = pointer(event, this);
+            const { watts, duration } = bisect(pointerData[0]);
+            const startMs = xScale.invert(pointerData[0]);
 
             tooltip
-                .attr("transform", `translate(${pointerX},${yScale(watts)})`)
-                .call(displayTooltip, `${watts} - ${formatMs(startMs)}`);
+                .attr(
+                    "transform",
+                    `translate(${pointerData[0]},${yScale(watts)})`
+                )
+                .call(
+                    displayTooltip,
+                    pointerData[1],
+                    yScale(watts),
+                    `${watts} watts - ${formatMs(startMs)}
+${formatMs(duration)}`
+                );
         });
 
         svg.on("touchend mouseleave", () => tooltip.call(displayTooltip, null));
@@ -125,12 +153,19 @@
 
 <style>
     svg {
+        margin-top: 5rem;
         width: 100%;
         height: 100%;
         overflow: visible;
     }
     .tick {
         font-size: 11px;
+    }
+
+    svg :global(.tooltip) {
+        pointer-events: none;
+        user-select: none;
+        font-size: 0.8rem;
     }
 
     path#workout {
