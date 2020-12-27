@@ -6,7 +6,7 @@
     } from "../_stores/currentWorkout";
     import { heartRate } from "../_stores/heartRate";
     import { trainerMetrics } from "../_stores/trainer";
-    import { toTimeFormat } from "../../../utils/time";
+    import { formatMs } from "../../../utils/time";
     import { Grid, Row, Column } from "carbon-components-svelte";
     import LargeTile from "../../../components/LargeTile.svelte";
 
@@ -34,7 +34,7 @@
             <LargeTile
                 title="Interval time"
                 subTitle={`next interval ${$nextInterval.nextWatts}`}>
-                {toTimeFormat($nextInterval.in)}
+                {formatMs($nextInterval.in)}
             </LargeTile>
         </Column>
         <Column>
@@ -47,7 +47,7 @@
             <LargeTile title="Target">{$currentWatts}</LargeTile>
         </Column>
         <Column>
-            <LargeTile title="Time">{toTimeFormat($currentTime)}</LargeTile>
+            <LargeTile title="Time">{formatMs($currentTime)}</LargeTile>
         </Column>
         <Column>
             <LargeTile title="Cadence">
