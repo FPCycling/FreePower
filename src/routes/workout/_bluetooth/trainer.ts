@@ -1,22 +1,11 @@
-import type { TrainerMetrics } from '../types/trainer';
-
-export function parseHeartRate(value) {
-    const dataView = value.buffer ? (value as DataView) : new DataView(value);
-
-    let flags = dataView.getUint8(0);
-    let rate16Bits = flags & 0x1;
-
-    if (rate16Bits) {
-        return dataView.getUint16(1, true);
-    } else {
-        return dataView.getUint8(1);
-    }
-}
+import type { TrainerMetrics } from '../_types/trainer';
+const MetersPerRev = 2.105;
 
 interface RPMMetrics {
     lastTime: number;
     lastRev: number;
     lastRpm: number;
+    successiveErrors: number;
 }
 
 // See https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Characteristics/org.bluetooth.characteristic.cycling_power_measurement.xml
@@ -28,13 +17,14 @@ export function parseTrainer(value): TrainerMetrics {
     // const flags = dataView.getInt16(0, true); // 00 52  --  0000 0000 0011 0100
     const power = dataView.getInt16(2, true);
 
-    return { power, cadence: parseCadence(dataView), speed: parseSpeed(dataView) };
+    return { power, cadence: parseCadence(dataView), ...parseSpeed(dataView) };
 }
 
 const crankRpm: RPMMetrics = {
     lastRev: 0,
     lastTime: 0,
     lastRpm: 0,
+    successiveErrors: 0,
 };
 
 function parseCadence(dataView: DataView) {
@@ -45,8 +35,14 @@ function parseCadence(dataView: DataView) {
         const time = currentCrankTime - crankRpm.lastTime;
         const revs = currentCrankRev - crankRpm.lastRev;
 
-        if (time) {
+        if (Math.abs(time) > 0.001 && time > 0 && revs > 0) {
             crankRpm.lastRpm = (1024 * 60 * revs) / time;
+            crankRpm.successiveErrors = 0;
+        } else {
+            crankRpm.successiveErrors += 1;
+            if (crankRpm.successiveErrors > 5) {
+                crankRpm.lastRpm = 0;
+            }
         }
     }
 
@@ -60,23 +56,35 @@ const wheelRpm: RPMMetrics = {
     lastRev: 0,
     lastTime: 0,
     lastRpm: 0,
+    successiveErrors: 0,
 };
 
-function parseSpeed(dataView: DataView) {
+function parseSpeed(dataView: DataView): Pick<TrainerMetrics, 'speed' | 'distance'> {
     const currentWheelRev = dataView.getUint32(6, true);
     const currentWheelTime = dataView.getUint16(10, true);
 
+    let revs = 0;
+
     if (wheelRpm.lastTime) {
         const time = currentWheelTime - wheelRpm.lastTime;
-        const revs = currentWheelRev - wheelRpm.lastRev;
+        revs = currentWheelRev - wheelRpm.lastRev;
 
-        if (time) {
+        if (Math.abs(time) > 0.001 && time > 0 && revs > 0) {
             wheelRpm.lastRpm = (2048 * 60 * revs) / time;
+            wheelRpm.successiveErrors = 0;
+        } else {
+            wheelRpm.successiveErrors += 1;
+            if (wheelRpm.successiveErrors > 5) {
+                wheelRpm.lastRpm = 0;
+            }
         }
     }
 
     wheelRpm.lastRev = currentWheelRev;
     wheelRpm.lastTime = currentWheelTime;
 
-    return Math.round((wheelRpm.lastRpm * 60 * 2.105) / 1000);
+    return {
+        speed: Math.round((wheelRpm.lastRpm * 60 * MetersPerRev) / 1000),
+        distance: revs * MetersPerRev,
+    };
 }

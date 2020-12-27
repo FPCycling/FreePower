@@ -3,21 +3,20 @@
         currentWatts,
         currentTime,
         currentWorkout,
-    } from "./stores/currentWorkout";
+    } from "./_stores/currentWorkout";
     import { onDestroy, onMount } from "svelte";
     import { playSound } from "../../utils/sounds";
-    import Controls from "./components/Controls.svelte";
-    import Stats from "./components/Stats.svelte";
+    import Controls from "./_components/Controls.svelte";
+    import Stats from "./_components/Stats.svelte";
     import { Button } from "carbon-components-svelte";
-    import { handlePairHrClick } from "../../stores/heartRate";
-    import { handlePairTrainerClick } from "../../stores/trainer";
+    import { handlePairHrClick } from "./_stores/heartRate";
+    import { handlePairTrainerClick } from "./_stores/trainer";
+    import TcxExporter from "./_components/TcxExporter.svelte";
 
     let Chart: any;
 
     onMount(async () => {
-        const module = await import("./components/Chart.svelte");
-
-        Chart = module.default;
+        Chart = (await import("./_components/Chart.svelte")).default;
 
         currentWatts.subscribe(() => {
             if ($currentTime > 0) {
@@ -55,3 +54,5 @@
     this={Chart}
     data={$currentWorkout?.workoutData}
     currentTime={$currentTime} />
+
+<TcxExporter />

@@ -2,7 +2,7 @@
     import { Button } from "carbon-components-svelte";
     import { FileUploader } from "carbon-components-svelte";
     import { parseMrcFile } from "../utils/parseMrcFile";
-    import { writableCurrentWorkout } from "./workout/stores/currentWorkout";
+    import { writableCurrentWorkout } from "./workout/_stores/currentWorkout";
     import { goto } from "@sapper/app";
 
     let files: string[] = [];

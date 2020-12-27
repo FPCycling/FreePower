@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { currentTime } from "../stores/currentWorkout";
+    import { currentTime } from "../_stores/currentWorkout";
     import { Button } from "carbon-components-svelte";
     import { onDestroy } from "svelte";
     import { activateAudioContext } from "../../../utils/sounds";

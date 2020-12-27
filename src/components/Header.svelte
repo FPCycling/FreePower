@@ -1,6 +1,4 @@
 <script lang="ts">
-    export let segment;
-
     import logo_light from "../../static/logo_light.png";
     import logo_dark from "../../static/logo_dark.png";
     import {

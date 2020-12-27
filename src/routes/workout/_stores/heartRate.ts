@@ -1,7 +1,7 @@
 /// <reference types="../../node_modules/@types/web-bluetooth" />
 
 import { derived, writable } from 'svelte/store';
-import { parseHeartRate } from '../utils/bluetooth';
+import { parseHeartRate } from '../_bluetooth/heartRate';
 
 const _heartRate = writable<number>(-1);
 

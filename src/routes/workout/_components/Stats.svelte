@@ -3,12 +3,17 @@
         currentWatts,
         currentTime,
         nextInterval,
-    } from "../stores/currentWorkout";
-    import { heartRate } from "../../../stores/heartRate";
-    import { trainerMetrics } from "../../../stores/trainer";
+    } from "../_stores/currentWorkout";
+    import { heartRate } from "../_stores/heartRate";
+    import { trainerMetrics } from "../_stores/trainer";
     import { toTimeFormat } from "../../../utils/time";
     import { Grid, Row, Column } from "carbon-components-svelte";
     import LargeTile from "../../../components/LargeTile.svelte";
+
+    function formatNumber(number) {
+        if (number === -1) return "N/A";
+        return String(number);
+    }
 </script>
 
 <style>
@@ -21,7 +26,9 @@
 <Grid class="statsGrid" noGutter condensed>
     <Row>
         <Column>
-            <LargeTile title="Power">{$trainerMetrics.power}</LargeTile>
+            <LargeTile title="Power">
+                {formatNumber($trainerMetrics.power)}
+            </LargeTile>
         </Column>
         <Column>
             <LargeTile
@@ -31,7 +38,7 @@
             </LargeTile>
         </Column>
         <Column>
-            <LargeTile title="Heart rate">{$heartRate}</LargeTile>
+            <LargeTile title="Heart rate">{formatNumber($heartRate)}</LargeTile>
         </Column>
     </Row>
 
@@ -43,7 +50,9 @@
             <LargeTile title="Time">{toTimeFormat($currentTime)}</LargeTile>
         </Column>
         <Column>
-            <LargeTile title="Cadence">{$trainerMetrics.cadence}</LargeTile>
+            <LargeTile title="Cadence">
+                {formatNumber($trainerMetrics.cadence)}
+            </LargeTile>
         </Column>
     </Row>
 </Grid>
