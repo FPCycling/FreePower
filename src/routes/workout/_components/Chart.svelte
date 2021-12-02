@@ -165,7 +165,7 @@ ${formatMs(duration)}`
     svg :global(.tooltip) {
         pointer-events: none;
         user-select: none;
-        font-size: 0.8rem;
+        font-size: 2rem;
     }
 
     path#workout {
@@ -195,18 +195,6 @@ ${formatMs(duration)}`
             x2={currentScaled}
             y1="0"
             y2={height} />
-    </g>
-
-    <g>
-        <path stroke="white" d={yPath} fill="none" />
-
-        {#each yTicks as y}
-            <g class="tick" opacity="1" transform="translate(0,{yScale(y)})">
-                <!-- svelte-ignore component-name-lowercase -->
-                <line x2="-5" />
-                <text dy="0.32em" fill="currentColor" x="-{0}">{y}</text>
-            </g>
-        {/each}
     </g>
 
     <g transform="translate(0, {height})">
