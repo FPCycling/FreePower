@@ -1,9 +1,7 @@
 <script lang="ts">
-    import { Button } from "carbon-components-svelte";
-    import { FileUploader } from "carbon-components-svelte";
-    import { parseMrcFile } from "../utils/parseMrcFile";
-    import { writableCurrentWorkout } from "./workout/_stores/currentWorkout";
-    import { goto } from "@sapper/app";
+    import { parseMrcFile } from '../utils/parseMrcFile';
+    import { writableCurrentWorkout } from './workout/_stores/currentWorkout';
+    import { goto } from '@sapper/app';
 
     let files: string[] = [];
 
@@ -19,20 +17,12 @@
 
     async function handleFileSelected(file: string) {
         writableCurrentWorkout.set(parseMrcFile(file));
-        goto("/workout");
+        goto('/workout');
     }
 </script>
 
-<FileUploader
-    multiple
-    on:change={handleFileChange}
-    labelTitle="Upload MRC workout file"
-    buttonLabel="Add workout"
-    accept={['.mrc']}
-    status="complete" />
+<input type="file" multiple on:change={handleFileChange} name="filename" />
 
 {#each files as file}
-    <Button on:click={() => handleFileSelected(file)}>
-        Select as current workout
-    </Button>
+    <button on:click={() => handleFileSelected(file)}> Select as current workout </button>
 {/each}
