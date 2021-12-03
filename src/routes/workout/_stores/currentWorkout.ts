@@ -1,5 +1,6 @@
 import type dayjs from 'dayjs';
-import { writable, derived, Writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
+import type { Writable } from 'svelte/store';
 import { userFtp } from '../../../stores/userSettings';
 import type { Workout } from '../../../types/workout';
 

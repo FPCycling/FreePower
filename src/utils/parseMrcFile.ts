@@ -35,14 +35,12 @@ function parseData(file: string): WorkoutData[] {
     return courseData
         .split('\n')
         .filter((line) => line.trim())
-        .map(
-            (line): WorkoutData => {
-                const split = line.split(' ');
-                return {
-                    startMs: Number(split[0]) * 60000,
-                    percentFtp: Number(split[1]),
-                    watts: 0,
-                };
-            },
-        );
+        .map((line): WorkoutData => {
+            const split = line.split(' ');
+            return {
+                startMs: Number(split[0]) * 60000,
+                percentFtp: Number(split[1]),
+                watts: 0,
+            };
+        });
 }

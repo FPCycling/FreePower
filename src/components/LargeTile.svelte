@@ -3,6 +3,16 @@
     export let subTitle: string = undefined;
 </script>
 
+<div class="tile">
+    <p class="title">{title}</p>
+    <p class="content">
+        <slot />
+    </p>
+    {#if subTitle}
+        <p class="subtitle">{subTitle}</p>
+    {/if}
+</div>
+
 <style>
     .title {
         text-transform: uppercase;
@@ -35,13 +45,3 @@
         margin-bottom: -0.5rem;
     }
 </style>
-
-<div class="tile">
-    <p class="title">{title}</p>
-    <p class="content">
-        <slot />
-    </p>
-    {#if subTitle}
-        <p class="subtitle">{subTitle}</p>
-    {/if}
-</div>
