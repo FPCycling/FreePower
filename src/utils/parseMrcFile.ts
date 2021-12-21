@@ -32,17 +32,28 @@ function parseHeader(file: string): { description: string; date: Dayjs } {
 function parseData(file: string): WorkoutData[] {
     const courseData = file.split('[END COURSE DATA]')[0].split('[COURSE DATA]')[1];
 
-    return courseData
+    const result = courseData
         .split('\n')
         .filter((line) => line.trim())
-        .map(
-            (line): WorkoutData => {
-                const split = line.split(' ');
-                return {
-                    startMs: Number(split[0]) * 60000,
-                    percentFtp: Number(split[1]),
-                    watts: 0,
-                };
-            },
-        );
+        .map((line): WorkoutData => {
+            const split = line.replace(/\t/g, ' ').split(' ');
+
+            return {
+                startMs: Number(split[0]) * 60000,
+                percentFtp: Number(split[1]),
+                watts: 0,
+            };
+        })
+        .filter((line, index, array) => {
+            console.log({ line, index, array });
+
+            if (index > 0 && index !== array.length - 1) {
+                return line.percentFtp !== array[index - 1].percentFtp;
+            }
+            return true;
+        });
+
+    console.log(result);
+
+    return result;
 }

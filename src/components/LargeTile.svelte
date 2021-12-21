@@ -1,6 +1,12 @@
 <script lang="ts">
+    import { Button } from "carbon-components-svelte";
+import About from "../routes/about.svelte";
+    import { difficulty } from "../stores/userSettings";
+
     export let title: string;
     export let subTitle: string = undefined;
+
+    export let isTarget = title === "Target";
 </script>
 
 <style>
@@ -27,6 +33,14 @@
         outline-offset: -2px;
     }
 
+    .difficulty{
+        display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 30px;
+    top: 35px;
+    }
+
     .subtitle {
         color: var(--neutral-6);
         font-weight: bold;
@@ -43,5 +57,11 @@
     </p>
     {#if subTitle}
         <p class="subtitle">{subTitle}</p>
+    {/if}
+    {#if isTarget}
+    <p class="difficulty">
+        <Button kind="ghost" on:click={() => difficulty.set($difficulty + 0.05)}>+</Button>
+        <Button kind="ghost" on:click={() => difficulty.set($difficulty - 0.05)}>-</Button>
+    </p>
     {/if}
 </div>
