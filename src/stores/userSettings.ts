@@ -13,3 +13,5 @@ userFtp.subscribe((ftp) => {
         localStorage.setItem('userFtp', `${ftp}`);
     }
 });
+
+export const difficulty = writable<number | undefined>(1);

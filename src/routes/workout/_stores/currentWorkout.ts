@@ -1,7 +1,7 @@
 import type dayjs from 'dayjs';
 import { writable, derived } from 'svelte/store';
 import type { Writable } from 'svelte/store';
-import { userFtp } from '../../../stores/userSettings';
+import { userFtp, difficulty } from '../../../stores/userSettings';
 import type { Workout } from '../../../types/workout';
 
 export interface InnerWorkout {
@@ -29,24 +29,24 @@ writableCurrentWorkout.subscribe((workout) => {
     }
 });
 
-export const currentWorkout = derived<[Writable<number>, Writable<InnerWorkout>], Workout | undefined>(
-    [userFtp, writableCurrentWorkout],
-    ([$userFtp, $currentWorkout]) => {
-        if (!$currentWorkout) {
-            return undefined;
-        }
+export const currentWorkout = derived<
+    [Writable<number>, Writable<number>, Writable<InnerWorkout>],
+    Workout | undefined
+>([userFtp, difficulty, writableCurrentWorkout], ([$userFtp, $difficulty, $currentWorkout]) => {
+    if (!$currentWorkout) {
+        return undefined;
+    }
 
-        return {
-            date: $currentWorkout.date,
-            description: $currentWorkout.description,
-            workoutData: $currentWorkout.workoutData.map((data) => ({
-                percentFtp: data.percentFtp,
-                startMs: data.startMs,
-                watts: Math.round((data.percentFtp / 100) * $userFtp),
-            })),
-        };
-    },
-);
+    return {
+        date: $currentWorkout.date,
+        description: $currentWorkout.description,
+        workoutData: $currentWorkout.workoutData.map((data) => ({
+            percentFtp: data.percentFtp,
+            startMs: data.startMs,
+            watts: Math.round((data.percentFtp / 100) * $userFtp * $difficulty),
+        })),
+    };
+});
 
 function createCurrentTime() {
     const { subscribe, set, update } = writable(0);

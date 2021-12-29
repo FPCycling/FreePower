@@ -1,6 +1,10 @@
 <script lang="ts">
+    import { difficulty } from '../stores/userSettings';
+
     export let title: string;
     export let subTitle: string = undefined;
+
+    export let isTarget = title === 'Target';
 </script>
 
 <div class="tile">
@@ -10,6 +14,12 @@
     </p>
     {#if subTitle}
         <p class="subtitle">{subTitle}</p>
+    {/if}
+    {#if isTarget}
+        <p class="difficulty">
+            <button kind="ghost" on:click={() => difficulty.set($difficulty + 0.05)}>+</button>
+            <button kind="ghost" on:click={() => difficulty.set($difficulty - 0.05)}>-</button>
+        </p>
     {/if}
 </div>
 
@@ -35,6 +45,14 @@
         background-color: var(--cds-ui-01, #f4f4f4);
         outline: 2px solid transparent;
         outline-offset: -2px;
+    }
+
+    .difficulty {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        right: 30px;
+        top: 35px;
     }
 
     .subtitle {
