@@ -22,7 +22,6 @@
     let yTicks: number[];
 
     $: {
-        console.log('updating...');
         xScale = scaleLinear()
             .domain(extent(data, (d) => d.startMs))
             .range([0, width]);

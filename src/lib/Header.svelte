@@ -1,22 +1,20 @@
 <script lang="ts">
-    import logo_light from '../../static/logo_light.png';
-    import logo_dark from '../../static/logo_dark.png';
+    import logo_light from '../../static/logo_light.png?url';
+    import logo_dark from '../../static/logo_dark.png?url';
     import { getThemeContext } from '../contexts/themeContext';
 
     const { carbon_theme, dark, light } = getThemeContext();
     let logo: string;
-    // let icon: typeof CarbonIcon;
 
     $: {
         logo = $dark ? logo_dark : logo_light;
-        //  icon = $dark ? LightIcon : DarkIcon;
     }
     function handleDarkModeClick() {
         carbon_theme.set($light ? 'g90' : 'g10');
     }
 </script>
 
-<span class="bx--header">
+<span class="bx--header h-14 shadow-lg bg-white">
     <a id="logo" href="/"><img alt="logo" src={logo} /></a>
 </span>
 
@@ -24,7 +22,7 @@
     span :global(.bx--header) {
         background-color: var(--cds-ui-01);
         border-bottom: none;
-        box-shadow: 0px -3px 10px 0px #32293d;
+        box-shadow: 0 -3px 10px 0 #32293d;
         height: 3.5rem;
     }
 
