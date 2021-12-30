@@ -1,4 +1,4 @@
-export function parseHeartRate(value) {
+export function parseHeartRate(value: any) {
     const dataView = value.buffer ? (value as DataView) : new DataView(value);
 
     const flags = dataView.getUint8(0);

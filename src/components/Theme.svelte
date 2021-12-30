@@ -1,71 +1,34 @@
-<script>
-    export let persist = false;
-    export let persistKey = 'theme';
-    export let theme = 'white';
-    export const themes = ['white', 'g10', 'g90', 'g100'];
+<script lang="ts">
+    import type { ThemeContext, Theme } from '../types/themes';
+
+    let persistKey = 'theme';
 
     import { onMount, afterUpdate, setContext } from 'svelte';
     import { writable, derived } from 'svelte/store';
 
-    const isValidTheme = (value) => themes.includes(value);
-    const isDark = (value) => isValidTheme(value) && (value === 'g90' || value === 'g100');
+    export let theme = writable<Theme>('light');
 
-    const carbon_theme = writable(theme);
-    const dark = writable(isDark(theme));
-    const light = derived(dark, (_) => !_);
-
-    const unsubscribe = carbon_theme.subscribe((value) => {
-        theme = value;
-    });
-
-    let _document = null;
-
-    setContext('Theme', {
-        updateVar: (name, value) => {
-            if (_document != null) {
-                _document.documentElement.style.setProperty(name, value);
-            }
-        },
-        carbon_theme,
-        dark,
-        light,
+    setContext<ThemeContext>('Theme', {
+        theme,
+        dark: derived(theme, (theme) => theme === 'dark'),
+        light: derived(theme, (theme) => theme === 'light'),
     });
 
     onMount(() => {
-        _document = window.document;
+        let persisted_theme = localStorage.getItem(persistKey);
 
-        try {
-            const persisted_theme = localStorage.getItem(persistKey);
-
-            if (isValidTheme(persisted_theme)) {
-                carbon_theme.set(persisted_theme);
-            }
-        } catch (error) {
-            console.error(error);
+        if (persisted_theme !== 'dark' || persisted_theme !== 'light') {
+            persisted_theme = 'light';
         }
 
-        return () => {
-            unsubscribe();
-        };
+        theme.set(persisted_theme as Theme);
     });
 
     afterUpdate(() => {
-        if (isValidTheme(theme)) {
-            if (_document != null) {
-                _document.documentElement.setAttribute('theme', theme);
-            }
-
-            if (persist) {
-                localStorage.setItem(persistKey, theme);
-            }
-        } else {
-            console.warn(
-                `"${theme}" is not a valid Carbon theme. Choose from available themes: ${JSON.stringify(themes)}`,
-            );
-        }
+        localStorage.setItem(persistKey, $theme);
     });
-
-    $: dark.set(isDark(theme));
 </script>
 
-<slot />
+<div class={$theme}>
+    <slot />
+</div>

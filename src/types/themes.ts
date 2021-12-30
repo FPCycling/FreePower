@@ -1,8 +1,9 @@
-import type { Writable } from 'svelte/store';
+import type { Writable, Readable } from 'svelte/store';
 
-export type ThemeContext = {
-    updateVar: (varName: string, value: any) => void;
-    dark: Writable<boolean>;
-    light: Writable<boolean>;
-    carbon_theme: Writable<string>;
-};
+export type Theme = 'light' | 'dark';
+
+export interface ThemeContext {
+    theme: Writable<Theme>;
+    dark: Readable<boolean>;
+    light: Readable<boolean>;
+}

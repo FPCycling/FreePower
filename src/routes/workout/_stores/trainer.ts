@@ -21,7 +21,7 @@ let ergCharacteristic: BluetoothRemoteGATTCharacteristic;
 export async function handlePairTrainerClick() {
     const service = await navigator.bluetooth
         .requestDevice({ filters: [{ services: ['cycling_power'] }] })
-        .then((device) => device.gatt.connect())
+        .then((device) => device.gatt!.connect())
         .then((server) => server.getPrimaryService('cycling_power'));
 
     await listenToMeasurements(service);
