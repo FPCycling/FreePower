@@ -2,7 +2,7 @@
     import { difficulty } from '../stores/userSettings';
 
     export let title: string;
-    export let subTitle: string = undefined;
+    export let subTitle: string | undefined = undefined;
 
     export let isTarget = title === 'Target';
 </script>
