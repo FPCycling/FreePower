@@ -23,12 +23,12 @@
     onDestroy(currentTime.pause);
 </script>
 
-<div class="controlsContainer">
+<div class="flex justify-between">
     <div>
         <Controls />
     </div>
     <div>
-        <button on:click={handlePairTrainerClick}>Pair Trainer</button>
+        <button class="mr-3" on:click={handlePairTrainerClick}>Pair Trainer</button>
         <button on:click={handlePairHrClick}>Pair HR</button>
     </div>
 </div>
@@ -37,14 +37,3 @@
 <svelte:component this={Chart} data={$currentWorkout?.workoutData} currentTime={$currentTime} />
 
 <TcxExporter />
-
-<!-- svelte-ignore missing-declaration -->
-<style>
-    .controlsContainer {
-        display: flex;
-        justify-content: space-between;
-    }
-    .controlsContainer :global(button) {
-        margin: 0 0.25rem;
-    }
-</style>

@@ -11,41 +11,22 @@
     }
 </script>
 
-<div class="statsGrid">
-    <div>
-        <div>
-            <LargeTile title="Power">
-                {formatNumber($trainerMetrics.power)}
-            </LargeTile>
-        </div>
-        <div>
-            <LargeTile title="Interval time" subTitle={`next interval ${$nextInterval.nextWatts}`}>
-                {formatMs($nextInterval.in)}
-            </LargeTile>
-        </div>
-        <div>
-            <LargeTile title="Heart rate">{formatNumber($heartRate)}</LargeTile>
-        </div>
+<div class="grid grid-rows-2 gap-0.5 pt-5">
+    <div class="grid grid-cols-3 gap-0.5">
+        <LargeTile title="Power">
+            {formatNumber($trainerMetrics.power)}
+        </LargeTile>
+        <LargeTile title="Interval time" subTitle={`next interval ${$nextInterval.nextWatts}`}>
+            {formatMs($nextInterval.in)}
+        </LargeTile>
+        <LargeTile title="Heart rate">{formatNumber($heartRate)}</LargeTile>
     </div>
 
-    <div>
-        <div>
-            <LargeTile title="Target">{$currentWatts}</LargeTile>
-        </div>
-        <div>
-            <LargeTile title="Time">{formatMs($currentTime)}</LargeTile>
-        </div>
-        <div>
-            <LargeTile title="Cadence">
-                {formatNumber($trainerMetrics.cadence)}
-            </LargeTile>
-        </div>
+    <div class="grid grid-cols-3 gap-0.5">
+        <LargeTile title="Target">{$currentWatts}</LargeTile>
+        <LargeTile title="Time">{formatMs($currentTime)}</LargeTile>
+        <LargeTile title="Cadence">
+            {formatNumber($trainerMetrics.cadence)}
+        </LargeTile>
     </div>
 </div>
-
-<style>
-    :global(.statsGrid) {
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-    }
-</style>

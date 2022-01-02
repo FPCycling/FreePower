@@ -5,13 +5,8 @@
 </script>
 
 <Theme>
-    <Header>
-        <div style="background: none; padding: 1rem;margin-top:3.5rem">
-            <div>
-                <slot />
-            </div>
-        </div>
-    </Header>
+    <Header />
+    <div class="pt-10 pl-20 pr-20">
+        <slot />
+    </div>
 </Theme>
-
-<slot />

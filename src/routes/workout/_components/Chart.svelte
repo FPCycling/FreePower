@@ -81,8 +81,8 @@
                     .join('tspan')
                     .attr('x', 0)
                     .attr('y', (_, i) => `${i * 1.1}em`)
-                    .style('font-weight', (_, i) => (i ? null : 'bold'))
-                    .text((d) => d),
+                    .text((d) => d)
+                    .style('font-weight', (_, i) => (i ? null : 'bold')),
             );
 
         const { y, width: w, height: h } = (text.node() as any).getBBox();
@@ -98,7 +98,7 @@
 
     onMount(() => {
         const svg = select(el);
-        const tooltip = svg.append('g').attr('class', 'tooltip');
+        const tooltip = svg.append('g').attr('class', 'pointer-events-none select-none text-3xl');
 
         svg.on('touchmove mousemove', function (event) {
             const pointerData = pointer(event, this);
@@ -119,41 +119,27 @@ ${formatMs(duration)}`,
 </script>
 
 <svelte:window bind:innerWidth={width} />
-<svg bind:this={el} preserveAspectRatio="xMinYMin" viewBox={`0 0 ${width} ${height}`}>
+<svg
+    class="mt-20 w-full h-full overflow-visible"
+    bind:this={el}
+    preserveAspectRatio="xMinYMin"
+    viewBox={`0 0 ${width} ${height}`}
+>
     <g>
-        <path id="workout" d={workoutPath(data)} fill="none" />
+        <path class="stroke-pink-400 stroke-3" id="workout" d={workoutPath(data)} fill="none" />
     </g>
     <g>
-        <!-- svelte-ignore component-name-lowercase -->
-        <line id="current" x1={currentScaled} x2={currentScaled} y1="0" y2={height} />
+        <line
+            class="stroke-neutral-900 dark:stroke-neutral-400"
+            id="current"
+            x1={currentScaled}
+            x2={currentScaled}
+            y1="0"
+            y2={height}
+        />
     </g>
 
     <g transform="translate(0, {height})">
         <path d={xPath} fill="none" />
     </g>
 </svg>
-
-<style>
-    svg {
-        margin-top: 5rem;
-        width: 100%;
-        height: 100%;
-        overflow: visible;
-    }
-
-    svg :global(.tooltip) {
-        pointer-events: none;
-        user-select: none;
-        font-size: 2rem;
-    }
-
-    path#workout {
-        stroke: var(--cds-active-primary);
-        stroke-width: 3;
-    }
-
-    line#current {
-        stroke: var(--cds-interactive-02);
-        stroke-width: 3;
-    }
-</style>

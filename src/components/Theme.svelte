@@ -15,13 +15,12 @@
     });
 
     onMount(() => {
-        let persisted_theme = localStorage.getItem(persistKey);
-
-        if (persisted_theme !== 'dark' || persisted_theme !== 'light') {
-            persisted_theme = 'light';
+        let persistedTheme = localStorage.getItem(persistKey);
+        if (persistedTheme !== 'dark' && persistedTheme !== 'light') {
+            persistedTheme = 'light';
         }
 
-        theme.set(persisted_theme as Theme);
+        theme.set(persistedTheme as Theme);
     });
 
     afterUpdate(() => {
@@ -30,5 +29,7 @@
 </script>
 
 <div class={$theme}>
-    <slot />
+    <div class="min-h-screen bg-neutral-100 dark:bg-neutral-1000 dark:text-neutral-200">
+        <slot />
+    </div>
 </div>

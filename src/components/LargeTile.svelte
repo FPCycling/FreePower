@@ -7,59 +7,20 @@
     export let isTarget = title === 'Target';
 </script>
 
-<div class="tile">
-    <p class="title">{title}</p>
-    <p class="content">
+<div
+    class="flex flex-col items-center relative min-w-[8rem] min-h-[4rem] p-4 bg-white dark:bg-neutral-900 outline-2 outline-transparent"
+>
+    <p class="uppercase text-neutral-500 font-bold -mb-4">{title}</p>
+    <p class="font-bold text-7.5xl">
         <slot />
     </p>
     {#if subTitle}
-        <p class="subtitle">{subTitle}</p>
+        <p class="text-neutral-600 font-bold -mt-1.5 pt-0.5 -mb-0.5">{subTitle}</p>
     {/if}
     {#if isTarget}
-        <p class="difficulty">
-            <button kind="ghost" on:click={() => difficulty.set($difficulty + 0.05)}>+</button>
-            <button kind="ghost" on:click={() => difficulty.set($difficulty - 0.05)}>-</button>
+        <p class="flex flex-col absolute right-3 top-3">
+            <button on:click={() => difficulty.set($difficulty + 0.05)}>+</button>
+            <button on:click={() => difficulty.set($difficulty - 0.05)}>-</button>
         </p>
     {/if}
 </div>
-
-<style>
-    .title {
-        text-transform: uppercase;
-        color: var(--neutral-5);
-        font-weight: bold;
-        margin-bottom: -1rem;
-    }
-    .content {
-        font-weight: bold;
-        font-size: 5rem;
-    }
-    .tile {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        min-width: 8rem;
-        min-height: 4rem;
-        padding: 1rem;
-        background-color: var(--cds-ui-01, #f4f4f4);
-        outline: 2px solid transparent;
-        outline-offset: -2px;
-    }
-
-    .difficulty {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        right: 30px;
-        top: 35px;
-    }
-
-    .subtitle {
-        color: var(--neutral-6);
-        font-weight: bold;
-        margin-top: -1.5rem;
-        padding-top: 0.5rem;
-        margin-bottom: -0.5rem;
-    }
-</style>
