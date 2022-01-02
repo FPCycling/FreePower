@@ -7,6 +7,7 @@
     import { handlePairHrClick } from './_stores/heartRate';
     import { handlePairTrainerClick } from './_stores/trainer';
     import TcxExporter from './_components/TcxExporter.svelte';
+    import Button from '../../components/design/buttons/Button.svelte';
 
     let Chart: any;
 
@@ -28,8 +29,8 @@
         <Controls />
     </div>
     <div>
-        <button class="mr-3" on:click={handlePairTrainerClick}>Pair Trainer</button>
-        <button on:click={handlePairHrClick}>Pair HR</button>
+        <Button class="mr-3" on:click={handlePairTrainerClick}>Pair Trainer</Button>
+        <Button on:click={handlePairHrClick}>Pair HR</Button>
     </div>
 </div>
 <Stats />

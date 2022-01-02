@@ -1,5 +1,6 @@
 <script lang="ts">
     import { difficulty } from '../stores/userSettings';
+    import Button from './design/buttons/Button.svelte';
 
     export let title: string;
     export let subTitle: string | undefined = undefined;
@@ -18,9 +19,9 @@
         <p class="text-neutral-600 font-bold -mt-1.5 pt-0.5 -mb-0.5">{subTitle}</p>
     {/if}
     {#if isTarget}
-        <p class="flex flex-col absolute right-3 top-3">
-            <button on:click={() => difficulty.set($difficulty + 0.05)}>+</button>
-            <button on:click={() => difficulty.set($difficulty - 0.05)}>-</button>
+        <p class="flex flex-col absolute right-3 top-[25%]">
+            <Button kind="minimal" on:click={() => difficulty.set($difficulty + 0.05)}>+</Button>
+            <Button kind="minimal" on:click={() => difficulty.set($difficulty - 0.05)}>-</Button>
         </p>
     {/if}
 </div>
