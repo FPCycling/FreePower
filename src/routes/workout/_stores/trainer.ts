@@ -18,12 +18,10 @@ export const trainerMetrics = derived([_trainerMetrics], ([$_trainerMetrics]) =>
 
 let ergCharacteristic: BluetoothRemoteGATTCharacteristic;
 
-export function handlePairPowerControl() {}
-
 export async function handlePairTrainerClick() {
     const service = await navigator.bluetooth
         .requestDevice({ filters: [{ services: ['cycling_power'] }] })
-        .then((device) => device.gatt.connect())
+        .then((device) => device.gatt!.connect())
         .then((server) => server.getPrimaryService('cycling_power'));
 
     await listenToMeasurements(service);

@@ -12,19 +12,19 @@ export const heartRate = derived([_heartRate], ([$_heartRate]) => {
 export function handlePairHrClick() {
     navigator.bluetooth
         .requestDevice({ filters: [{ services: ['heart_rate'] }] })
-        .then((device) => device.gatt.connect())
+        .then((device) => device.gatt?.connect())
         .then((server) => {
-            return server.getPrimaryService('heart_rate');
+            return server?.getPrimaryService('heart_rate');
         })
         .then((service) => {
-            return service.getCharacteristic('heart_rate_measurement');
+            return service?.getCharacteristic('heart_rate_measurement');
         })
         .then((characteristic) => {
-            characteristic.addEventListener('characteristicvaluechanged', (event) => {
+            characteristic?.addEventListener('characteristicvaluechanged', (event) => {
                 _heartRate.set(parseHeartRate((event.target as any).value));
             });
 
-            characteristic.startNotifications();
+            characteristic?.startNotifications();
         })
         .catch((error) => {
             console.error(error);

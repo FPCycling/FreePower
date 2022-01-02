@@ -4,10 +4,8 @@
         "compounds": []
     },
     "files.exclude": {
-        "**/*.js": {"when": "$(basename).ts"},
+        "**/*.js": { "when": "$(basename).ts" },
         "**/*.js.map": true
     },
-    "cSpell.words": [
-        "characteristicvaluechanged"
-    ]
+    "cSpell.words": ["characteristicvaluechanged"]
 }

@@ -44,16 +44,12 @@ function parseData(file: string): WorkoutData[] {
                 watts: 0,
             };
         })
-        .filter((line, index, array) => {
-            console.log({ line, index, array });
-
+        .filter(function removeDuplicatedLines(line, index, array) {
             if (index > 0 && index !== array.length - 1) {
                 return line.percentFtp !== array[index - 1].percentFtp;
             }
             return true;
         });
-
-    console.log(result);
 
     return result;
 }

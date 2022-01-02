@@ -1,5 +1,6 @@
 import type dayjs from 'dayjs';
-import { writable, derived, Writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
+import type { Writable } from 'svelte/store';
 import { userFtp, difficulty } from '../../../stores/userSettings';
 import type { Workout } from '../../../types/workout';
 
@@ -29,10 +30,10 @@ writableCurrentWorkout.subscribe((workout) => {
 });
 
 export const currentWorkout = derived<
-    [Writable<number>, Writable<number>, Writable<InnerWorkout>],
+    [Writable<number | undefined>, Writable<number | undefined>, Writable<InnerWorkout | undefined>],
     Workout | undefined
 >([userFtp, difficulty, writableCurrentWorkout], ([$userFtp, $difficulty, $currentWorkout]) => {
-    if (!$currentWorkout) {
+    if (!$currentWorkout || !$userFtp || !$difficulty) {
         return undefined;
     }
 
@@ -49,7 +50,7 @@ export const currentWorkout = derived<
 
 function createCurrentTime() {
     const { subscribe, set, update } = writable(0);
-    let interval: NodeJS.Timeout;
+    let interval: NodeJS.Timeout | undefined;
     return {
         subscribe,
         start: () => {
@@ -60,11 +61,15 @@ function createCurrentTime() {
             }
         },
         pause: () => {
-            clearInterval(interval);
+            if (interval) {
+                clearInterval(interval);
+            }
             interval = undefined;
         },
         reset: () => {
-            clearInterval(interval);
+            if (interval) {
+                clearInterval(interval);
+            }
             interval = undefined;
             set(0);
         },

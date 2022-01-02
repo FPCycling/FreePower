@@ -1,5 +1,5 @@
 <script lang="ts">
-    import XMLWriter from "xml-writer";
+    /* import XMLWriter from "xml-writer";
     import {
         currentWatts,
         currentTime,
@@ -22,5 +22,5 @@
         xw.endDocument();
 
         console.log(xw.toString());
-    });
+    });*/
 </script>

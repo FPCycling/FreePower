@@ -1,58 +1,32 @@
 <script lang="ts">
-    import {
-        currentWatts,
-        currentTime,
-        nextInterval,
-    } from "../_stores/currentWorkout";
-    import { heartRate } from "../_stores/heartRate";
-    import { trainerMetrics } from "../_stores/trainer";
-    import { formatMs } from "../../../utils/time";
-    import { Grid, Row, Column } from "carbon-components-svelte";
-    import LargeTile from "../../../components/LargeTile.svelte";
+    import { currentWatts, currentTime, nextInterval } from '../_stores/currentWorkout';
+    import { heartRate } from '../_stores/heartRate';
+    import { trainerMetrics } from '../_stores/trainer';
+    import { formatMs } from '../../../utils/time';
+    import LargeTile from '../../../components/LargeTile.svelte';
 
     function formatNumber(number) {
-        if (number === -1) return "N/A";
+        if (number === -1) return 'N/A';
         return String(number);
     }
 </script>
 
-<style>
-    :global(.statsGrid) {
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-    }
-</style>
+<div class="grid grid-rows-2 gap-0.5 pt-5">
+    <div class="grid grid-cols-3 gap-0.5">
+        <LargeTile title="Power">
+            {formatNumber($trainerMetrics.power)}
+        </LargeTile>
+        <LargeTile title="Interval time" subTitle={`next interval ${$nextInterval.nextWatts}`}>
+            {formatMs($nextInterval.in)}
+        </LargeTile>
+        <LargeTile title="Heart rate">{formatNumber($heartRate)}</LargeTile>
+    </div>
 
-<Grid class="statsGrid" noGutter condensed>
-    <Row>
-        <Column>
-            <LargeTile title="Power">
-                {formatNumber($trainerMetrics.power)}
-            </LargeTile>
-        </Column>
-        <Column>
-            <LargeTile
-                title="Interval time"
-                subTitle={`next interval ${$nextInterval.nextWatts}`}>
-                {formatMs($nextInterval.in)}
-            </LargeTile>
-        </Column>
-        <Column>
-            <LargeTile title="Heart rate">{formatNumber($heartRate)}</LargeTile>
-        </Column>
-    </Row>
-
-    <Row>
-        <Column>
-            <LargeTile title="Target">{$currentWatts}</LargeTile>
-        </Column>
-        <Column>
-            <LargeTile title="Time">{formatMs($currentTime)}</LargeTile>
-        </Column>
-        <Column>
-            <LargeTile title="Cadence">
-                {formatNumber($trainerMetrics.cadence)}
-            </LargeTile>
-        </Column>
-    </Row>
-</Grid>
+    <div class="grid grid-cols-3 gap-0.5">
+        <LargeTile title="Target">{$currentWatts}</LargeTile>
+        <LargeTile title="Time">{formatMs($currentTime)}</LargeTile>
+        <LargeTile title="Cadence">
+            {formatNumber($trainerMetrics.cadence)}
+        </LargeTile>
+    </div>
+</div>

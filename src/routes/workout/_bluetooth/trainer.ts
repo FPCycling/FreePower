@@ -10,7 +10,7 @@ interface RPMMetrics {
 
 // See https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Characteristics/org.bluetooth.characteristic.cycling_power_measurement.xml
 // https://stackoverflow.com/questions/54427537/understanding-ble-characteristic-values-for-cycle-power-measurement-0x2a63
-export function parseTrainer(value): TrainerMetrics {
+export function parseTrainer(value: any): TrainerMetrics {
     const dataView = value.buffer ? (value as DataView) : new DataView(value);
 
     // TODO: Use flags to support more devices

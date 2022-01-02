@@ -1,79 +1,33 @@
 <script lang="ts">
-    import logo_light from "../../static/logo_light.png";
-    import logo_dark from "../../static/logo_dark.png";
-    import {
-        SkipToContent,
-        Header,
-        HeaderUtilities,
-        HeaderGlobalAction,
-    } from "carbon-components-svelte";
-    import LightIcon from "carbon-icons-svelte/lib/LightFilled32";
-    import UserAvatar from "carbon-icons-svelte/lib/UserAvatarFilledAlt32";
-    import DarkIcon from "carbon-icons-svelte/lib/Moon32";
-    import { getThemeContext } from "../contexts/themeContext";
-    import type { CarbonIcon } from "carbon-icons-svelte";
+    import logo_light from '../../static/logo_light.png?url';
+    import logo_dark from '../../static/logo_dark.png?url';
+    import { getThemeContext } from '../contexts/themeContext';
 
-    const { carbon_theme, dark, light } = getThemeContext();
+    import { Moon, Sun, User } from './design/icons';
+    import Button from './design/buttons/Button.svelte';
+
+    const { theme, dark } = getThemeContext();
+
     let logo: string;
-    let icon: typeof CarbonIcon;
+    let switchThemeIcon: typeof Sun | typeof Moon;
 
     $: {
+        switchThemeIcon = $dark ? Sun : Moon;
         logo = $dark ? logo_dark : logo_light;
-        icon = $dark ? LightIcon : DarkIcon;
     }
     function handleDarkModeClick() {
-        carbon_theme.set($light ? "g90" : "g10");
+        theme.set($dark ? 'light' : 'dark');
     }
 </script>
 
-<style>
-    span :global(.bx--header) {
-        background-color: var(--cds-ui-01);
-        border-bottom: none;
-        box-shadow: 0px -3px 10px 0px #32293d;
-        height: 3.5rem;
-    }
-
-    span :global(.bx--header__action > svg) {
-        fill: var(--cds-ui-05);
-    }
-
-    span :global(a.bx--header__name) {
-        display: none;
-    }
-
-    span :global(.bx--header__action) {
-        height: 3.5rem;
-        width: 3.5rem;
-    }
-
-    span :global(.bx--header__action:hover) {
-        background-color: var(--cds-hover-primary);
-    }
-
-    #logo img {
-        height: 2rem;
-    }
-
-    @media only screen and (min-width: 1056px) {
-        #logo {
-            padding-left: 3.5rem;
-        }
-    }
-</style>
-
-<span class="bx--header">
-    <Header>
-        <a id="logo" href="/"><img alt="logo" src={logo} /></a>
-        <div slot="skip-to-content">
-            <SkipToContent />
-        </div>
-        <HeaderUtilities>
-            <HeaderGlobalAction
-                on:click={handleDarkModeClick}
-                aria-label="Dark mode"
-                {icon} />
-            <HeaderGlobalAction aria-label="User Profile" icon={UserAvatar} />
-        </HeaderUtilities>
-    </Header>
+<span class="flex items-center h-14 shadow-lg bg-white dark:bg-neutral-900 justify-between">
+    <a class="pl-14" href="/"><img class="h-8" alt="logo" src={logo} /></a>
+    <span class="flex">
+        <Button kind="minimal" class="mr-3" on:click={handleDarkModeClick}>
+            <svelte:component this={switchThemeIcon} class="text-neutral-900 dark:text-neutral-200 h-8 w-8" />
+        </Button>
+        <Button kind="minimal" class="mr-3">
+            <User class="h-8 w-8 text-neutral-900 dark:text-neutral-200" />
+        </Button>
+    </span>
 </span>
