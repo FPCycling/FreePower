@@ -3,10 +3,10 @@
 
     let persistKey = 'theme';
 
-    import { onMount, afterUpdate, setContext } from 'svelte';
+    import { onMount, setContext } from 'svelte';
     import { writable, derived } from 'svelte/store';
 
-    export let theme = writable<Theme>('light');
+    export let theme = writable<Theme>(undefined);
 
     setContext<ThemeContext>('Theme', {
         theme,
@@ -23,8 +23,10 @@
         theme.set(persistedTheme as Theme);
     });
 
-    afterUpdate(() => {
-        localStorage.setItem(persistKey, $theme);
+    theme.subscribe((theme) => {
+        if (theme) {
+            localStorage.setItem(persistKey, theme);
+        }
     });
 </script>
 

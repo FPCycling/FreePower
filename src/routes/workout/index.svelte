@@ -29,12 +29,11 @@
         <Controls />
     </div>
     <div>
-        <Button class="mr-3" on:click={handlePairTrainerClick}>Pair Trainer</Button>
+        <Button on:click={handlePairTrainerClick}>Pair Trainer</Button>
         <Button on:click={handlePairHrClick}>Pair HR</Button>
+        <TcxExporter />
     </div>
 </div>
 <Stats />
 
 <svelte:component this={Chart} data={$currentWorkout?.workoutData} currentTime={$currentTime} />
-
-<TcxExporter />
