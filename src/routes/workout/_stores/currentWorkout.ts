@@ -1,8 +1,9 @@
-import type dayjs from 'dayjs';
-import { writable, derived } from 'svelte/store';
+import dayjs from 'dayjs';
 import type { Writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import { userFtp, difficulty } from '../../../stores/userSettings';
 import type { Workout } from '../../../types/workout';
+import { WorkoutStatus } from '../../../types/workout';
 
 export interface InnerWorkout {
     date: dayjs.Dayjs;
@@ -48,12 +49,26 @@ export const currentWorkout = derived<
     };
 });
 
+const _workoutStatus = writable<WorkoutStatus>(WorkoutStatus.Initial);
+
+export const workoutStatus = derived([_workoutStatus], ([$_workoutStatus]) => {
+    return $_workoutStatus;
+});
+
+const _startTime = writable<dayjs.Dayjs>();
+
+export const startTime = derived([_startTime], ([$_startTime]) => {
+    return $_startTime;
+});
+
 function createCurrentTime() {
     const { subscribe, set, update } = writable(0);
     let interval: NodeJS.Timeout | undefined;
     return {
         subscribe,
         start: () => {
+            _startTime.set(dayjs());
+            _workoutStatus.set(WorkoutStatus.Started);
             if (!interval) {
                 interval = setInterval(() => {
                     update((t) => t + 100);
@@ -61,12 +76,14 @@ function createCurrentTime() {
             }
         },
         pause: () => {
+            _workoutStatus.set(WorkoutStatus.Paused);
             if (interval) {
                 clearInterval(interval);
             }
             interval = undefined;
         },
         reset: () => {
+            _workoutStatus.set(WorkoutStatus.Initial);
             if (interval) {
                 clearInterval(interval);
             }
@@ -116,4 +133,10 @@ export const nextInterval = derived([currentWorkout, currentTime], ([$currentWor
         at: nextActive.startMs,
         in: Math.max(nextActive.startMs - $currentTime + 999, 0),
     };
+});
+
+nextInterval.subscribe((next) => {
+    if (next.in === 0) {
+        _workoutStatus.set(WorkoutStatus.Completed);
+    }
 });
