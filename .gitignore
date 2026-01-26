@@ -8,3 +8,5 @@ node_modules
 .vercel
 .output
 .idea/*
+src/**/*.js.map
+src/**/*.js
