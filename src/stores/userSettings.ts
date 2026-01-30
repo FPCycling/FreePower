@@ -1,9 +1,14 @@
 import { writable } from 'svelte/store';
 
-let initialFtp = 314;
+let initialFtp = 200;
 
 if (typeof window !== 'undefined' && window.localStorage) {
-    initialFtp = Number(localStorage.getItem('userFtp'));
+    const storedFtp = localStorage.getItem('userFtp');
+    if (storedFtp) {
+        initialFtp = Number(storedFtp);
+    } else {
+        localStorage.setItem('userFtp', '200');
+    }
 }
 
 export const userFtp = writable<number | undefined>(initialFtp);
