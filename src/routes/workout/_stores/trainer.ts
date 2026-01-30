@@ -43,7 +43,9 @@ async function listenToControl(service: BluetoothRemoteGATTService) {
     await ergCharacteristic.startNotifications();
 
     currentWatts.subscribe((watts) => {
-        const resistance = new Uint8Array([0x42, watts & 255, watts >> 8]);
-        ergCharacteristic.writeValue(resistance);
+        if (watts !== undefined) {
+            const resistance = new Uint8Array([0x42, watts & 255, watts >> 8]);
+            ergCharacteristic.writeValue(resistance);
+        }
     });
 }

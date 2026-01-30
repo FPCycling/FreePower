@@ -9,28 +9,33 @@ export function parseMrcFile(file: string): Workout {
 }
 
 function parseHeader(file: string): { description: string; date: Dayjs } {
-    const header = file.split('[END COURSE HEADER]')[0].split('[COURSE HEADER]')[1];
+    const header = file.split('[END COURSE HEADER]')[0]?.split('[COURSE HEADER]')[1];
+    if (!header) throw new Error('Invalid MRC file format');
+
     const headerLines = header
         .split('\n')
         .map((line) => line.trim())
         .filter((line) => line)
         .map((line) => line.split('=').map((item) => item.trim()))
         .map((item) => {
-            return { [item[0]]: item[1] };
+            const key = item[0];
+            const value = item[1];
+            return key && value ? { [key]: value } : {};
         })
-        .reduce((result, current) => Object.assign(result, current), {});
+        .reduce((result, current) => Object.assign(result, current), {} as Record<string, string>);
 
     const fileName = (headerLines['FILE NAME'] as string) || '';
     const date = fileName.slice(0, fileName.indexOf('.'));
 
     return {
-        description: headerLines['DESCRIPTION'],
+        description: headerLines['DESCRIPTION'] || '',
         date: dayjs(date),
     };
 }
 
 function parseData(file: string): WorkoutData[] {
-    const courseData = file.split('[END COURSE DATA]')[0].split('[COURSE DATA]')[1];
+    const courseData = file.split('[END COURSE DATA]')[0]?.split('[COURSE DATA]')[1];
+    if (!courseData) throw new Error('Invalid MRC file format');
 
     const result = courseData
         .split('\n')
@@ -46,7 +51,8 @@ function parseData(file: string): WorkoutData[] {
         })
         .filter(function removeDuplicatedLines(line, index, array) {
             if (index > 0 && index !== array.length - 1) {
-                return line.percentFtp !== array[index - 1].percentFtp;
+                const prevLine = array[index - 1];
+                return prevLine ? line.percentFtp !== prevLine.percentFtp : true;
             }
             return true;
         });

@@ -6,7 +6,7 @@
     import Stats from './_components/Stats.svelte';
     import { handlePairHrClick } from './_stores/heartRate';
     import { handlePairTrainerClick } from './_stores/trainer';
-    import TcxExporter from './_components/TcxExporter.svelte';
+    import FitExporter from './_components/FitExporter.svelte';
     import Button from '../../components/design/buttons/Button.svelte';
 
     let Chart: any;
@@ -37,4 +37,4 @@
 
 <svelte:component this={Chart} data={$currentWorkout?.workoutData} currentTime={$currentTime} />
 
-<TcxExporter />
+<FitExporter />
