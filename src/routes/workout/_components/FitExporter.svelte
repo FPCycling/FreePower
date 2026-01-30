@@ -148,7 +148,9 @@
             const fitData = fitWriter.finish();
 
             // Create blob and download
-            const uint8Array = new Uint8Array(fitData.buffer as ArrayBuffer);
+            // Note: fitData is a DataView whose ArrayBuffer may contain more
+            // data than just the fit file. We need to use byteOffset and byteLength
+            const uint8Array = new Uint8Array(fitData.buffer, fitData.byteOffset, fitData.byteLength) as any;
             const blob = new Blob([uint8Array], { type: 'application/octet-stream' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -175,15 +177,12 @@
 <div class="mt-4">
     <Button onclick={generateAndDownloadFit} class={!canExport ? 'opacity-50 cursor-not-allowed' : ''}>
         Export .FIT File
-        {#if $workoutRecording.dataPointCount > 0}
-            ({$workoutRecording.dataPointCount} data points)
-        {/if}
     </Button>
 
     {#if $workoutRecording.status === RecordingStatus.Recording}
         <span class="ml-3 text-sm text-green-500">● Recording</span>
     {:else if $workoutRecording.status === RecordingStatus.Paused}
-        <span class="ml-3 text-sm text-yellow-500">⏸ Paused</span>
+        <span class="ml-3 text-sm text-yellow-500">Paused</span>
     {:else if $workoutRecording.status === RecordingStatus.Completed}
         <span class="ml-3 text-sm text-blue-500">✓ Ready to export</span>
     {/if}
