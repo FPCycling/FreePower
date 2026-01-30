@@ -1,5 +1,6 @@
 <script lang="ts">
     import { userFtp } from '../stores/userSettings';
+    import { debugMode, toggleDebugMode } from '../routes/workout/_stores/debugMode';
 
     let ftpValue = $state($userFtp?.toString() || '200');
     let ftpError = $state('');
@@ -25,7 +26,7 @@
 <div
     class="absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white dark:bg-neutral-800 ring-1 ring-black ring-opacity-5 z-50"
 >
-    <div class="p-4">
+    <div class="p-4 space-y-4">
         <div class="flex items-center gap-3">
             <label for="ftpInput" class="text-base font-bold text-neutral-900 dark:text-neutral-200 whitespace-nowrap">
                 FTP
@@ -44,6 +45,17 @@
                     <p class="text-xs text-red-600 dark:text-red-400 mt-1">{ftpError}</p>
                 {/if}
             </div>
+        </div>
+
+        <div class="border-t border-neutral-200 dark:border-neutral-700 pt-4">
+            <button
+                onclick={toggleDebugMode}
+                class="w-full px-4 py-2 text-sm font-medium rounded-md transition-colors {$debugMode.enabled
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-600'}"
+            >
+                {$debugMode.enabled ? '✓ Debug Mode ON' : 'Debug Mode'}
+            </button>
         </div>
     </div>
 </div>

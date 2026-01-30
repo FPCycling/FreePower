@@ -4,6 +4,7 @@ import { derived, writable } from 'svelte/store';
 import type { TrainerMetrics } from '../_types/trainer';
 import { parseTrainer } from '../_bluetooth/trainer';
 import { currentWatts } from '../_stores/currentWorkout';
+import { debugMode } from './debugMode';
 
 const _trainerMetrics = writable<TrainerMetrics>({
     cadence: -1,
@@ -12,7 +13,11 @@ const _trainerMetrics = writable<TrainerMetrics>({
     distance: -1,
 });
 
-export const trainerMetrics = derived([_trainerMetrics], ([$_trainerMetrics]) => {
+export const trainerMetrics = derived([_trainerMetrics, debugMode], ([$_trainerMetrics, $_debugMode]) => {
+    // Use fake data when debug mode is enabled
+    if ($_debugMode.enabled) {
+        return $_debugMode.fakeTrainerMetrics;
+    }
     return $_trainerMetrics;
 });
 
