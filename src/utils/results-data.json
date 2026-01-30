@@ -1,0 +1,328 @@
+[
+    {
+        "id": 91376750,
+        "start_date_local": "2026-01-31T00:00:00",
+        "icu_training_load": 119,
+        "icu_atl": 67.11334,
+        "icu_ctl": 64.98045,
+        "type": "Ride",
+        "carbs_used": null,
+        "ss_p_max": 0.032180496,
+        "ss_w_prime": 1.6343095,
+        "ss_cp": 113.72926,
+        "calendar_id": 1,
+        "uid": "3be33124-f011-475e-a9aa-f168c050201f",
+        "athlete_id": "9909187",
+        "category": "WORKOUT",
+        "end_date_local": "2026-02-01T00:00:00",
+        "name": "2026-01-31",
+        "description": "Emerson +1 consists of 5x10-minute over-under intervals spent slightly above or slightly below FTP where 3 minutes at 98% FTP alternate with 2 minute at 105% FTP.5 minutes of active recovery fall between each interval.\n- 52s 49%\n- 1m45s 50%\n- 52s 51%\n- 3m30s 65%\n- 3m 80%\n- 3m 100%\n\n5x\n- 5m 40%\n- 3m 98%\n- 2m 105%\n- 3m 98%\n- 2m 105%\n\n- 7s 40%\n- 12s 39%\n- 12s 38%\n- 12s 37%\n- 12s 36%\n- 12s 35%\n- 12s 34%\n- 12s 33%\n- 12s 32%\n- 12s 31%\n",
+        "indoor": null,
+        "color": null,
+        "moving_time": 5394,
+        "icu_ftp": null,
+        "w_prime": null,
+        "p_max": null,
+        "atl_days": null,
+        "ctl_days": null,
+        "updated": "2026-01-30T20:08:09.418+00:00",
+        "not_on_fitness_chart": false,
+        "show_as_note": false,
+        "show_on_ctl_line": false,
+        "for_week": false,
+        "target": null,
+        "joules": 1225413,
+        "joules_above_ftp": 16800,
+        "workout_doc": {
+            "steps": [
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 49
+                    },
+                    "duration": 52
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 50
+                    },
+                    "duration": 105
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 51
+                    },
+                    "duration": 52
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 65
+                    },
+                    "duration": 210
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 80
+                    },
+                    "duration": 180
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 100
+                    },
+                    "duration": 180
+                },
+                {
+                    "reps": 5,
+                    "text": "5x",
+                    "steps": [
+                        {
+                            "power": {
+                                "units": "%ftp",
+                                "value": 40
+                            },
+                            "duration": 300
+                        },
+                        {
+                            "power": {
+                                "units": "%ftp",
+                                "value": 98
+                            },
+                            "duration": 180
+                        },
+                        {
+                            "power": {
+                                "units": "%ftp",
+                                "value": 105
+                            },
+                            "duration": 120
+                        },
+                        {
+                            "power": {
+                                "units": "%ftp",
+                                "value": 98
+                            },
+                            "duration": 180
+                        },
+                        {
+                            "power": {
+                                "units": "%ftp",
+                                "value": 105
+                            },
+                            "duration": 120
+                        }
+                    ],
+                    "distance": 0,
+                    "duration": 4500
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 40
+                    },
+                    "duration": 7
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 39
+                    },
+                    "duration": 12
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 38
+                    },
+                    "duration": 12
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 37
+                    },
+                    "duration": 12
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 36
+                    },
+                    "duration": 12
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 35
+                    },
+                    "duration": 12
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 34
+                    },
+                    "duration": 12
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 33
+                    },
+                    "duration": 12
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 32
+                    },
+                    "duration": 12
+                },
+                {
+                    "power": {
+                        "units": "%ftp",
+                        "value": 31
+                    },
+                    "duration": 12
+                }
+            ],
+            "locales": [],
+            "options": {},
+            "distance": 0,
+            "duration": 5394,
+            "zoneTimes": [
+                {
+                    "id": "Z1",
+                    "max": 55,
+                    "name": "Z1",
+                    "secs": 1824,
+                    "zone": 1,
+                    "color": "#009e80",
+                    "maxWatts": 159,
+                    "minWatts": 1,
+                    "percentRange": "0% - 55%"
+                },
+                {
+                    "id": "Z2",
+                    "max": 75,
+                    "name": "Z2",
+                    "secs": 210,
+                    "zone": 2,
+                    "color": "#009e00",
+                    "maxWatts": 217,
+                    "minWatts": 160,
+                    "percentRange": "56% - 75%"
+                },
+                {
+                    "id": "Z3",
+                    "max": 90,
+                    "name": "Z3",
+                    "secs": 180,
+                    "zone": 3,
+                    "color": "#ffcb0e",
+                    "maxWatts": 261,
+                    "minWatts": 218,
+                    "percentRange": "76% - 90%"
+                },
+                {
+                    "id": "Z4",
+                    "max": 105,
+                    "name": "Z4",
+                    "secs": 3180,
+                    "zone": 4,
+                    "color": "#ff7f0e",
+                    "maxWatts": 304,
+                    "minWatts": 262,
+                    "percentRange": "91% - 105%"
+                },
+                {
+                    "id": "Z5",
+                    "max": 120,
+                    "name": "Z5",
+                    "secs": 0,
+                    "zone": 5,
+                    "color": "#dd0447",
+                    "maxWatts": 348,
+                    "minWatts": 305,
+                    "percentRange": "106% - 120%"
+                },
+                {
+                    "id": "Z6",
+                    "max": 150,
+                    "name": "Z6",
+                    "secs": 0,
+                    "zone": 6,
+                    "color": "#6633cc",
+                    "maxWatts": 435,
+                    "minWatts": 349,
+                    "percentRange": "121% - 150%"
+                },
+                {
+                    "id": "Z7",
+                    "max": 999,
+                    "name": "Z7",
+                    "secs": 0,
+                    "zone": 7,
+                    "color": "#504861",
+                    "maxWatts": 9999,
+                    "minWatts": 436,
+                    "percentRange": "151% +"
+                },
+                {
+                    "id": "SS",
+                    "gap": true,
+                    "max": 97,
+                    "min": 84,
+                    "name": "Sweet Spot",
+                    "secs": 0,
+                    "zone": 8,
+                    "color": "#ffa00e",
+                    "maxWatts": 281,
+                    "minWatts": 243,
+                    "percentRange": "84% - 97%"
+                }
+            ],
+            "description": "Emerson +1 consists of 5x10-minute over-under intervals spent slightly above or slightly below FTP where 3 minutes at 98% FTP alternate with 2 minute at 105% FTP.5 minutes of active recovery fall between each interval.",
+            "strain_score": {
+                "ss_cp": 113.72926126683596,
+                "ss_p_max": 0.03218049656311309,
+                "ss_w_prime": 1.6343095040266722,
+                "strain_score": 115.39575126742575
+            },
+            "average_watts": 227,
+            "normalized_power": 258,
+            "variability_index": 1.1365638766519823,
+            "polarization_index": 0
+        },
+        "push_errors": null,
+        "athlete_cannot_edit": false,
+        "hide_from_athlete": false,
+        "structure_read_only": false,
+        "created_by_id": "9909187",
+        "shared_event_id": null,
+        "entered": false,
+        "carbs_per_hour": null,
+        "sub_type": null,
+        "distance": 0,
+        "tags": null,
+        "attachments": null,
+        "oauth_client_id": null,
+        "external_id": null,
+        "load_target": null,
+        "time_target": null,
+        "distance_target": null,
+        "plan_athlete_id": null,
+        "plan_folder_id": null,
+        "plan_workout_id": null,
+        "plan_applied": null,
+        "icu_intensity": 89.11878,
+        "strain_score": 115.39575,
+        "plan_name": null,
+        "paired_activity_id": null
+    }
+]

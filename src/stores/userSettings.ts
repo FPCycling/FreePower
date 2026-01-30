@@ -21,6 +21,28 @@ userFtp.subscribe((ftp) => {
 
 export const difficulty = writable<number | undefined>(1);
 
+// Intervals.icu API Key
+let initialApiKey = '';
+
+if (typeof window !== 'undefined' && window.localStorage) {
+    const storedApiKey = localStorage.getItem('intervalsIcuApiKey');
+    if (storedApiKey) {
+        initialApiKey = storedApiKey;
+    }
+}
+
+export const intervalsIcuApiKey = writable<string>(initialApiKey);
+
+intervalsIcuApiKey.subscribe((apiKey) => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+        if (apiKey) {
+            localStorage.setItem('intervalsIcuApiKey', apiKey);
+        } else {
+            localStorage.removeItem('intervalsIcuApiKey');
+        }
+    }
+});
+
 // Debug availability
 let initialDebugAvailable = false;
 
