@@ -3,10 +3,10 @@
 
     let persistKey = 'theme';
 
-    import { onMount, afterUpdate, setContext } from 'svelte';
+    import { onMount, setContext } from 'svelte';
     import { writable, derived } from 'svelte/store';
 
-    export let theme = writable<Theme>('light');
+    let theme = writable<Theme>('light');
 
     setContext<ThemeContext>('Theme', {
         theme,
@@ -23,13 +23,15 @@
         theme.set(persistedTheme as Theme);
     });
 
-    afterUpdate(() => {
+    $effect(() => {
         localStorage.setItem(persistKey, $theme);
     });
+
+    let { children }: { children?: any } = $props();
 </script>
 
 <div class={$theme}>
     <div class="min-h-screen bg-neutral-100 dark:bg-neutral-1000 dark:text-neutral-200">
-        <slot />
+        {@render children?.()}
     </div>
 </div>

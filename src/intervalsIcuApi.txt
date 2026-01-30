@@ -1,0 +1,22 @@
+Intervals.icu now has a public API for other applications. To use it you need to generate an API key in /settings (look for “Developer Settings” near the bottom). Your API key allows other applications to access your Intervals.icu data. Be careful what you do with it! If you suspect that your key may have been compromised immediately clear or re-generate it.
+
+By using the API you agree to the Intervals.icu API Terms and Conditions.
+
+The API uses basic authentication for personal use. The username is “API_KEY” and the password your API key. Example using curl:
+
+$ curl -u API_KEY:1l0nlqjq3j1obdhg08rz5rfhx https://intervals.icu/api/v1/athlete/2049151/activities.csv
+
+Apps intended to be used by more than one person should use OAuth and Bearer tokens.
+
+I generated some API docs:
+
+RapiDoc UI (best)
+Swagger UI (retro)
+Note that you can use “0” for the athlete id for endpoints that accept an athlete id in the path. This will use the athlete for the API key or bearer token used to make the call.
+
+Also you can extend Intervals.icu itself using Javascript.
+
+There are some guides for common API tasks:
+
+Intervals.icu API Integration Cookbook
+Uploading planned workouts to Intervals.icu

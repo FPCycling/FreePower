@@ -1,9 +1,8 @@
-const colors = require('tailwindcss/colors')
-
+const colors = require('tailwindcss/colors');
 
 const config = {
     content: ['./src/**/*.{html,js,svelte,ts}'],
-    darkMode: "class",
+    darkMode: 'class',
     theme: {
         colors: {
             inherit: colors.inherit,
@@ -51,16 +50,16 @@ const config = {
                 900: '#372F32',
                 1000: '#211C1E',
                 1100: '#0B090A',
-            }
+            },
         },
         extend: {
             strokeWidth: {
-                "3": "3px",
+                3: '3px',
             },
             fontSize: {
-                "7.5xl": "5rem",
-            }
-        }
+                '7.5xl': '5rem',
+            },
+        },
     },
     plugins: [],
 };

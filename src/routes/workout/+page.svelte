@@ -29,8 +29,8 @@
         <Controls />
     </div>
     <div>
-        <Button class="mr-3" on:click={handlePairTrainerClick}>Pair Trainer</Button>
-        <Button on:click={handlePairHrClick}>Pair HR</Button>
+        <Button class="mr-3" onclick={handlePairTrainerClick}>Pair Trainer</Button>
+        <Button onclick={handlePairHrClick}>Pair HR</Button>
     </div>
 </div>
 <Stats />
