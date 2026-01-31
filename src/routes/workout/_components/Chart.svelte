@@ -95,13 +95,15 @@
             const { watts, duration } = bisect(pointerData[0]);
             const startMs = xScale!.invert(pointerData[0]);
 
-            tooltip.attr('transform', `translate(${pointerData[0]},${yScale!(watts)})`).call(
-                displayTooltip,
-                pointerData[1],
-                yScale!(watts),
-                `${watts} watts - ${formatMs(startMs)}
+            if (watts !== undefined) {
+                tooltip.attr('transform', `translate(${pointerData[0]},${yScale!(watts)})`).call(
+                    displayTooltip,
+                    pointerData[1],
+                    yScale!(watts),
+                    `${watts} watts - ${formatMs(startMs)}
 ${formatMs(duration)}`,
-            );
+                );
+            }
         });
 
         svg.on('touchend mouseleave', () => tooltip.call(displayTooltip, null));
