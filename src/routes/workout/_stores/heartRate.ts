@@ -2,10 +2,15 @@
 
 import { derived, writable } from 'svelte/store';
 import { parseHeartRate } from '../_bluetooth/heartRate';
+import { debugMode } from './debugMode';
 
 const _heartRate = writable<number>(-1);
 
-export const heartRate = derived([_heartRate], ([$_heartRate]) => {
+export const heartRate = derived([_heartRate, debugMode], ([$_heartRate, $_debugMode]) => {
+    // Use fake data when debug mode is enabled
+    if ($_debugMode.enabled) {
+        return $_debugMode.fakeHeartRate;
+    }
     return $_heartRate;
 });
 
