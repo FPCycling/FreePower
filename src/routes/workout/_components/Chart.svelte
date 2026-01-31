@@ -1,68 +1,58 @@
 <script lang="ts">
     import type { WorkoutData } from '../../../types/workout';
     import { line, curveStepAfter, scaleLinear, extent, bisector, select, pointer } from 'd3';
-    import type { Line, ScaleLinear, NumberValue, Selection } from 'd3';
+    import type { NumberValue, Selection } from 'd3';
     import { onMount } from 'svelte';
     import { formatMs } from '../../../utils/time';
 
-    export let data: WorkoutData[];
-    export let currentTime: number;
+    let { data, currentTime }: { data: WorkoutData[]; currentTime: number } = $props();
 
     let el: SVGElement;
 
-    let width = 200;
+    let width = $state(200);
     const height = 300;
 
-    let xPath: string;
-    let yPath: string;
-    let workoutPath: Line<WorkoutData>;
-    let currentScaled: number;
-    let xScale: ScaleLinear<number, number, never>;
-    let yScale: ScaleLinear<number, number, never>;
-    let yTicks: number[];
+    let xScale = $derived.by(() => {
+        if (!data || data.length === 0) return undefined;
+        const extentX = extent(data, (d) => d.startMs) as [number, number];
+        return scaleLinear().domain(extentX).range([0, width]);
+    });
 
-    $: {
-        xScale = scaleLinear()
-            .domain(extent(data, (d) => d.startMs))
-            .range([0, width]);
+    let yScale = $derived.by(() => {
+        if (!data || data.length === 0) return undefined;
+        const extentY = [0, (extent(data, (d) => d.watts)[1] || 0) + 30];
+        return scaleLinear().domain(extentY).range([height, 0]);
+    });
 
-        const extentY = [0, extent(data, (d) => d.watts)[1] + 30];
-        yScale = scaleLinear().domain(extentY).range([height, 0]);
-
-        workoutPath = line<WorkoutData>()
+    let workoutPathString = $derived.by(() => {
+        if (!data || data.length === 0 || !xScale || !yScale) return '';
+        const workoutPath = line<WorkoutData>()
             .x((d) => xScale(d.startMs))
             .y((d) => yScale(d.watts))
             .curve(curveStepAfter);
+        return workoutPath(data) || '';
+    });
 
-        yTicks = [];
-        for (let i = extentY[0]; i < extentY[1]; i += 30) {
-            yTicks.push(Math.floor(i / 5) * 5);
-        }
+    let currentScaled = $derived(xScale ? xScale(currentTime) : 0);
 
-        xPath = `M${30 + 0.5},6V0H${width + 1}V6`;
-        yPath = `M-6,${height + 0.5}H0.5V0.5H-6`;
-    }
-
-    $: {
-        currentScaled = xScale(currentTime);
-    }
+    let xPath = $derived(`M${30 + 0.5},6V0H${width + 1}V6`);
 
     function bisect(pointerX: NumberValue) {
-        const startMs = xScale.invert(pointerX);
+        const startMs = xScale!.invert(pointerX);
         const index = bisector<WorkoutData, number>((d) => d.startMs).right(data, startMs, 1);
         const nextInterval = data[index];
         const currentInterval = data[index - 1];
         return {
-            watts: currentInterval.watts,
-            duration: nextInterval.startMs - currentInterval.startMs,
+            watts: currentInterval?.watts,
+            duration: (nextInterval?.startMs ?? 0) - (currentInterval?.startMs ?? 0),
         };
     }
 
     function displayTooltip(
         g: Selection<SVGGElement, unknown, null, undefined>,
-        pointerY: number,
-        tooltipY: number,
-        value: string,
+        pointerY: number | null,
+        tooltipY?: number,
+        value?: string,
     ) {
         if (!value) return g.style('display', 'none');
 
@@ -87,7 +77,7 @@
 
         const { y, width: w, height: h } = (text.node() as any).getBBox();
 
-        if (tooltipY > pointerY) {
+        if (typeof tooltipY === 'number' && pointerY !== null && tooltipY > pointerY) {
             text.attr('transform', `translate(${-w / 2},${15 - y})`);
             path.attr('d', `M${-w / 2 - 10} 5 H -5 l 5 -5 l 5 5 H ${w / 2 + 10} v ${h + 20} h-${w + 20}z`);
         } else {
@@ -103,12 +93,12 @@
         svg.on('touchmove mousemove', function (event) {
             const pointerData = pointer(event, this);
             const { watts, duration } = bisect(pointerData[0]);
-            const startMs = xScale.invert(pointerData[0]);
+            const startMs = xScale!.invert(pointerData[0]);
 
-            tooltip.attr('transform', `translate(${pointerData[0]},${yScale(watts)})`).call(
+            tooltip.attr('transform', `translate(${pointerData[0]},${yScale!(watts)})`).call(
                 displayTooltip,
                 pointerData[1],
-                yScale(watts),
+                yScale!(watts),
                 `${watts} watts - ${formatMs(startMs)}
 ${formatMs(duration)}`,
             );
@@ -126,7 +116,7 @@ ${formatMs(duration)}`,
     viewBox={`0 0 ${width} ${height}`}
 >
     <g>
-        <path class="stroke-pink-400 stroke-3" id="workout" d={workoutPath(data)} fill="none" />
+        <path class="stroke-pink-400 stroke-3" id="workout" d={workoutPathString} fill="none" />
     </g>
     <g>
         <line

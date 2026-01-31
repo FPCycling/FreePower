@@ -1,0 +1,404 @@
+{
+    "openapi": "3.0.1",
+    "info": { "title": "Intervals.icu API - Activities & Workouts Only", "version": "v1.0.0" },
+    "servers": [{ "url": "https://intervals.icu", "description": "Generated server url" }],
+    "security": [{ "APIKey": [], "AccessToken": [] }],
+    "paths": {
+        "/api/v1/athlete/{id}/activities": {
+            "get": {
+                "tags": ["Activities"],
+                "summary": "List activities for a date range in desc date order",
+                "operationId": "listActivities",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } },
+                    { "name": "oldest", "in": "query", "required": false, "schema": { "type": "string" } },
+                    { "name": "newest", "in": "query", "required": false, "schema": { "type": "string" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Activity" } }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Activities"],
+                "summary": "Upload activity file (fit, tcx, gpx or zip)",
+                "operationId": "uploadActivity",
+                "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": { "file": { "type": "string", "format": "binary" } }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": { "schema": { "$ref": "#/components/schemas/UploadResponse" } }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/athlete/{id}/activities/manual": {
+            "post": {
+                "tags": ["Activities"],
+                "summary": "Create a manual activity",
+                "operationId": "createManualActivity",
+                "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Activity" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Activity" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/athlete/{id}/activities/manual/bulk": {
+            "post": {
+                "tags": ["Activities"],
+                "summary": "Create multiple manual activities with upsert on external_id",
+                "operationId": "createMultipleManualActivities",
+                "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Activity" } }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Activity" } }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/activity/{id}": {
+            "get": {
+                "tags": ["Activities"],
+                "summary": "Get an activity",
+                "operationId": "getActivity",
+                "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Activity" } } }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Activities"],
+                "summary": "Update activity",
+                "operationId": "updateActivity",
+                "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Activity" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Activity" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Activities"],
+                "summary": "Delete an activity",
+                "operationId": "deleteActivity",
+                "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "responses": {
+                    "200": { "description": "OK" }
+                }
+            }
+        },
+        "/api/v1/athlete/{id}/workouts": {
+            "get": {
+                "tags": ["Workouts"],
+                "summary": "List all workouts in the athlete's library",
+                "operationId": "listWorkouts",
+                "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Workout" } }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Workouts"],
+                "summary": "Create a new workout",
+                "operationId": "createWorkout",
+                "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Workout" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Workout" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/athlete/{id}/workouts/{workoutId}": {
+            "get": {
+                "tags": ["Workouts"],
+                "summary": "Get a workout",
+                "operationId": "getWorkout",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } },
+                    { "name": "workoutId", "in": "path", "required": true, "schema": { "type": "string" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Workout" } } }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Workouts"],
+                "summary": "Update a workout",
+                "operationId": "updateWorkout",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } },
+                    { "name": "workoutId", "in": "path", "required": true, "schema": { "type": "string" } }
+                ],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Workout" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Workout" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Workouts"],
+                "summary": "Delete a workout",
+                "operationId": "deleteWorkout",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } },
+                    { "name": "workoutId", "in": "path", "required": true, "schema": { "type": "string" } }
+                ],
+                "responses": {
+                    "200": { "description": "OK" }
+                }
+            }
+        },
+        "/api/v1/athlete/{id}/events": {
+            "get": {
+                "tags": ["Events"],
+                "summary": "List events (planned workouts) for date range",
+                "operationId": "listEvents",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } },
+                    { "name": "oldest", "in": "query", "required": false, "schema": { "type": "string" } },
+                    { "name": "newest", "in": "query", "required": false, "schema": { "type": "string" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Event" } }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Events"],
+                "summary": "Create an event (planned workout) on the athlete's calendar",
+                "operationId": "createEvent",
+                "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Event" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Event" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/athlete/{id}/events/{eventId}": {
+            "get": {
+                "tags": ["Events"],
+                "summary": "Get an event (planned workout)",
+                "operationId": "getEvent",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } },
+                    {
+                        "name": "eventId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Event" } } }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Events"],
+                "summary": "Update an event (planned workout)",
+                "operationId": "updateEvent",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } },
+                    {
+                        "name": "eventId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Event" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Event" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Events"],
+                "summary": "Delete an event (planned workout) from calendar",
+                "operationId": "deleteEvent",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } },
+                    {
+                        "name": "eventId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "OK" }
+                }
+            }
+        },
+        "/api/v1/athlete/{id}": {
+            "get": {
+                "tags": ["Athletes"],
+                "summary": "Get the athlete profile",
+                "operationId": "getAthlete",
+                "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Athlete" } } }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Activity": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string" },
+                    "start_date_local": { "type": "string" },
+                    "type": { "type": "string" },
+                    "name": { "type": "string" },
+                    "description": { "type": "string" },
+                    "distance": { "type": "number" },
+                    "moving_time": { "type": "integer" },
+                    "elapsed_time": { "type": "integer" },
+                    "total_elevation_gain": { "type": "number" },
+                    "average_watts": { "type": "number" },
+                    "weighted_average_watts": { "type": "number" },
+                    "average_hr": { "type": "number" },
+                    "max_hr": { "type": "number" },
+                    "external_id": { "type": "string" }
+                }
+            },
+            "Workout": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "description": { "type": "string" },
+                    "updated": { "type": "string" }
+                }
+            },
+            "Event": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer", "format": "int32" },
+                    "start_date_local": { "type": "string" },
+                    "name": { "type": "string" },
+                    "description": { "type": "string" },
+                    "type": { "type": "string" },
+                    "workout_id": { "type": "string" }
+                }
+            },
+            "Athlete": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "email": { "type": "string" }
+                }
+            },
+            "UploadResponse": {
+                "type": "object",
+                "properties": {
+                    "activities": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/Activity" }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "APIKey": {
+                "type": "http",
+                "scheme": "basic"
+            },
+            "AccessToken": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    }
+}

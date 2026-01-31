@@ -5,7 +5,7 @@
     import { formatMs } from '../../../utils/time';
     import LargeTile from '../../../components/LargeTile.svelte';
 
-    function formatNumber(number) {
+    function formatNumber(number: number) {
         if (number === -1) return 'N/A';
         return String(number);
     }

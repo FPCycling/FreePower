@@ -19,7 +19,13 @@ let initialWorkout = undefined;
 
 if (typeof window !== 'undefined' && window.localStorage) {
     const initialWorkoutString = localStorage.getItem('currentWorkout');
-    initialWorkout = initialWorkoutString ? JSON.parse(initialWorkoutString) : undefined;
+    if (initialWorkoutString) {
+        try {
+            initialWorkout = JSON.parse(initialWorkoutString);
+        } catch {
+            initialWorkout = undefined;
+        }
+    }
 }
 
 export const writableCurrentWorkout = writable<InnerWorkout | undefined>(initialWorkout);
@@ -90,7 +96,7 @@ export const currentWatts = derived([currentWorkout, currentTime], ([$currentWor
 
     const currentlyActive = actives.length ? actives[actives.length - 1] : $currentWorkout.workoutData[0];
 
-    return currentlyActive.watts;
+    return currentlyActive?.watts;
 });
 
 export const nextInterval = derived([currentWorkout, currentTime], ([$currentWorkout, $currentTime]) => {
@@ -112,8 +118,8 @@ export const nextInterval = derived([currentWorkout, currentTime], ([$currentWor
     const nextActive = $currentWorkout.workoutData[nextIndex];
 
     return {
-        nextWatts: nextActive.watts,
-        at: nextActive.startMs,
-        in: Math.max(nextActive.startMs - $currentTime + 999, 0),
+        nextWatts: nextActive?.watts,
+        at: nextActive?.startMs,
+        in: Math.max((nextActive?.startMs ?? 0) - $currentTime + 999, 0),
     };
 });

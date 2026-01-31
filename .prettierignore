@@ -1,0 +1,29 @@
+# Dependencies
+node_modules
+.pnpm-store
+.pnpm-debug.log
+
+# Build outputs
+dist
+build
+.next
+out
+
+# Tailwind
+tailwind.config.js
+tailwind.config.ts
+tailwind.config.cjs
+
+# Generated files
+*.css.map
+*.min.css
+*.min.js
+
+# Package manager
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Misc
+.DS_Store
+*.log

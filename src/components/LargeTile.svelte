@@ -2,10 +2,9 @@
     import { difficulty } from '../stores/userSettings';
     import Button from './design/buttons/Button.svelte';
 
-    export let title: string;
-    export let subTitle: string | undefined = undefined;
+    let { title, subTitle = undefined, children }: { title: string; subTitle?: string; children?: any } = $props();
 
-    export let isTarget = title === 'Target';
+    let isTarget = $derived(title === 'Target');
 </script>
 
 <div
@@ -13,15 +12,15 @@
 >
     <p class="uppercase text-neutral-500 font-bold -mb-4">{title}</p>
     <p class="font-bold text-7.5xl">
-        <slot />
+        {@render children?.()}
     </p>
     {#if subTitle}
         <p class="text-neutral-600 font-bold -mt-1.5 pt-0.5 -mb-0.5">{subTitle}</p>
     {/if}
     {#if isTarget}
         <p class="flex flex-col absolute right-3 top-[25%]">
-            <Button kind="minimal" on:click={() => difficulty.set($difficulty + 0.05)}>+</Button>
-            <Button kind="minimal" on:click={() => difficulty.set($difficulty - 0.05)}>-</Button>
+            <Button kind="minimal" onclick={() => difficulty.update((d) => (d || 1) + 0.05)}>+</Button>
+            <Button kind="minimal" onclick={() => difficulty.update((d) => (d || 1) - 0.05)}>-</Button>
         </p>
     {/if}
 </div>

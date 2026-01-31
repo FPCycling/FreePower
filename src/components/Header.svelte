@@ -1,30 +1,27 @@
 <script lang="ts">
-    import logo_light from '../../static/logo_light.png?url';
-    import logo_dark from '../../static/logo_dark.png?url';
     import { getThemeContext } from '../contexts/themeContext';
+    import { resolve } from '$app/paths';
 
     import { Moon, Sun, User } from './design/icons';
     import Button from './design/buttons/Button.svelte';
 
     const { theme, dark } = getThemeContext();
 
-    let logo: string;
-    let switchThemeIcon: typeof Sun | typeof Moon;
+    let logo = $derived($dark ? '/logo_dark.png' : '/logo_light.png');
+    let SwitchThemeIcon = $derived($dark ? Sun : Moon);
 
-    $: {
-        switchThemeIcon = $dark ? Sun : Moon;
-        logo = $dark ? logo_dark : logo_light;
-    }
     function handleDarkModeClick() {
+        console.log('clicked!');
+
         theme.set($dark ? 'light' : 'dark');
     }
 </script>
 
 <span class="flex items-center h-14 shadow-lg bg-white dark:bg-neutral-900 justify-between">
-    <a class="pl-14" href="/"><img class="h-8" alt="logo" src={logo} /></a>
+    <a class="pl-14" href={resolve('/')}><img class="h-8" alt="logo" src={logo} /></a>
     <span class="flex">
-        <Button kind="minimal" class="mr-3" on:click={handleDarkModeClick}>
-            <svelte:component this={switchThemeIcon} class="text-neutral-900 dark:text-neutral-200 h-8 w-8" />
+        <Button kind="minimal" class="mr-3" onclick={handleDarkModeClick}>
+            <SwitchThemeIcon class="text-neutral-900 dark:text-neutral-200 h-8 w-8" />
         </Button>
         <Button kind="minimal" class="mr-3">
             <User class="h-8 w-8 text-neutral-900 dark:text-neutral-200" />
