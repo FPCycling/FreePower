@@ -1,7 +1,7 @@
 <script lang="ts">
     import { userFtp, intervalsIcuApiKey } from '../stores/userSettings';
     import { debugMode, toggleDebugMode } from '../routes/workout/_stores/debugMode';
-    import { fetchUpcomingWorkouts } from '../utils/intervalsIcuApi';
+    import { getAthleteProfile } from '../utils/intervalsIcuApi';
 
     let ftpValue = $state($userFtp?.toString() || '200');
     let ftpError = $state('');
@@ -34,29 +34,18 @@
 
     async function testApiConnection() {
         if (!apiKeyValue) {
-            testResult = 'Error: Please enter an API key first';
+            testResult = 'Error';
             return;
         }
 
         testLoading = true;
-        testResult = 'Loading...';
+        testResult = '';
 
         try {
-            // Fetch workouts for the next 30 days
-            const today = new Date().toISOString().split('T')[0];
-            const futureDate = new Date();
-            futureDate.setDate(futureDate.getDate() + 30);
-            const newest = futureDate.toISOString().split('T')[0];
-
-            const workouts = await fetchUpcomingWorkouts(apiKeyValue, today, newest);
-
-            if (workouts.length === 0) {
-                testResult = 'Success! No upcoming workouts found.';
-            } else {
-                testResult = `Success! Found ${workouts.length} upcoming workout(s):\n${JSON.stringify(workouts, null, 2)}`;
-            }
+            await getAthleteProfile(apiKeyValue);
+            testResult = 'Successful';
         } catch (error) {
-            testResult = `Error: ${error instanceof Error ? error.message : 'Unknown error'}`;
+            testResult = 'Error';
         } finally {
             testLoading = false;
         }
@@ -99,20 +88,20 @@
                 placeholder="Enter your API key"
                 class="block w-full rounded-md border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-200 shadow-sm focus:border-pink-300 focus:ring focus:ring-pink-200 focus:ring-opacity-50 px-3 py-2 text-sm"
             />
-            <button
-                onclick={testApiConnection}
-                disabled={testLoading || !apiKeyValue}
-                class="mt-2 w-full px-3 py-2 text-xs font-medium rounded-md transition-colors bg-pink-600 text-white hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-                {testLoading ? 'Testing...' : 'Test API Connection'}
-            </button>
-            {#if testResult}
-                <div
-                    class="mt-2 p-2 rounded text-xs bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-200 max-h-48 overflow-auto whitespace-pre-wrap break-words"
+            <div class="flex items-center gap-2 mt-2">
+                <button
+                    onclick={testApiConnection}
+                    disabled={testLoading || !apiKeyValue}
+                    class="flex-1 px-3 py-2 text-xs font-medium rounded-md transition-colors bg-pink-600 text-white hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {testResult}
-                </div>
-            {/if}
+                    {testLoading ? 'Testing...' : 'Test API Connection'}
+                </button>
+                {#if testResult === 'Successful'}
+                    <span class="text-green-600 dark:text-green-400 text-sm">✓</span>
+                {:else if testResult === 'Error'}
+                    <span class="text-red-600 dark:text-red-400 text-sm">✗</span>
+                {/if}
+            </div>
         </div>
 
         <div class="border-t border-neutral-200 dark:border-neutral-700 pt-4">
