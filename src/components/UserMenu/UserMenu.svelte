@@ -19,8 +19,13 @@
     }
 
     $effect(() => {
-        document.addEventListener('click', handleClickOutside);
+        // Add a small delay to prevent the opening click from triggering the close
+        const timeoutId = setTimeout(() => {
+            document.addEventListener('click', handleClickOutside);
+        }, 0);
+
         return () => {
+            clearTimeout(timeoutId);
             document.removeEventListener('click', handleClickOutside);
         };
     });
