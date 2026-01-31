@@ -1,6 +1,6 @@
 <script lang="ts">
     import { intervalsIcuApiKey } from '../../../stores/userSettings';
-    import { getAthleteProfile } from '../utils/intervalsIcuApi';
+    import { getAthleteProfile } from '../../../utils/intervalsIcuApi';
 
     let apiKeyValue = $state($intervalsIcuApiKey || '');
     let testResult = $state('');
@@ -25,6 +25,7 @@
             await getAthleteProfile(apiKeyValue);
             testResult = 'Successful';
         } catch (error) {
+            console.error(error);
             testResult = 'Error';
         } finally {
             testLoading = false;
