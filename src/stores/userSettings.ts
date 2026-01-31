@@ -20,3 +20,23 @@ userFtp.subscribe((ftp) => {
 });
 
 export const difficulty = writable<number | undefined>(1);
+
+// Debug availability
+let initialDebugAvailable = false;
+
+if (typeof window !== 'undefined' && window.localStorage) {
+    const stored = localStorage.getItem('isDebugAvailable');
+    if (stored === null) {
+        localStorage.setItem('isDebugAvailable', 'false');
+    } else {
+        initialDebugAvailable = stored === 'true';
+    }
+}
+
+export const isDebugAvailable = writable<boolean>(initialDebugAvailable);
+
+isDebugAvailable.subscribe((value) => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('isDebugAvailable', value.toString());
+    }
+});

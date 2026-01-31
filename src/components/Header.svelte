@@ -4,7 +4,7 @@
 
     import { Moon, Sun, User } from './design/icons';
     import Button from './design/buttons/Button.svelte';
-    import UserMenu from './UserMenu.svelte';
+    import UserMenu from './UserMenu/UserMenu.svelte';
 
     const { theme, dark } = getThemeContext();
 
@@ -14,8 +14,6 @@
     let showUserMenu = $state(false);
 
     function handleDarkModeClick() {
-        console.log('clicked!');
-
         theme.set($dark ? 'light' : 'dark');
     }
 
@@ -36,7 +34,7 @@
             </Button>
 
             {#if showUserMenu}
-                <UserMenu />
+                <UserMenu onClose={() => (showUserMenu = false)} />
             {/if}
         </div>
     </span>
