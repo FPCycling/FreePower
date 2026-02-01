@@ -1,7 +1,7 @@
 import { writable, derived, get } from 'svelte/store';
 import { heartRate } from './heartRate';
 import { trainerMetrics } from './trainer';
-import { currentWatts, currentTime } from './currentWorkout';
+import { currentWatts } from './currentWorkout';
 
 export interface WorkoutDataPoint {
     timestamp: number; // seconds since workout start
@@ -25,6 +25,7 @@ interface WorkoutRecordingState {
     dataPoints: WorkoutDataPoint[];
     startTime: Date | null;
     recordingInterval: NodeJS.Timeout | null;
+    elapsedTime: number; // real elapsed time in seconds
 }
 
 const initialState: WorkoutRecordingState = {
@@ -32,6 +33,7 @@ const initialState: WorkoutRecordingState = {
     dataPoints: [],
     startTime: null,
     recordingInterval: null,
+    elapsedTime: 0,
 };
 
 const _workoutRecording = writable<WorkoutRecordingState>(initialState);
@@ -49,22 +51,24 @@ function collectDataPoint() {
     const $heartRate = get(heartRate);
     const $trainerMetrics = get(trainerMetrics);
     const $currentWatts = get(currentWatts);
-    const $currentTime = get(currentTime);
 
-    const dataPoint: WorkoutDataPoint = {
-        timestamp: Math.floor($currentTime / 1000), // convert ms to seconds
-        power: $trainerMetrics.power >= 0 ? $trainerMetrics.power : 0,
-        heartRate: $heartRate >= 0 ? $heartRate : 0,
-        cadence: $trainerMetrics.cadence >= 0 ? $trainerMetrics.cadence : 0,
-        speed: $trainerMetrics.speed >= 0 ? $trainerMetrics.speed : 0,
-        distance: $trainerMetrics.distance >= 0 ? $trainerMetrics.distance : 0,
-        targetPower: $currentWatts || 0,
-    };
+    _workoutRecording.update((state) => {
+        const dataPoint: WorkoutDataPoint = {
+            timestamp: state.elapsedTime, // use real elapsed time
+            power: $trainerMetrics.power >= 0 ? $trainerMetrics.power : 0,
+            heartRate: $heartRate >= 0 ? $heartRate : 0,
+            cadence: $trainerMetrics.cadence >= 0 ? $trainerMetrics.cadence : 0,
+            speed: $trainerMetrics.speed >= 0 ? $trainerMetrics.speed : 0,
+            distance: $trainerMetrics.distance >= 0 ? $trainerMetrics.distance : 0,
+            targetPower: $currentWatts || 0,
+        };
 
-    _workoutRecording.update((state) => ({
-        ...state,
-        dataPoints: [...state.dataPoints, dataPoint],
-    }));
+        return {
+            ...state,
+            dataPoints: [...state.dataPoints, dataPoint],
+            elapsedTime: state.elapsedTime + 1, // increment by 1 second
+        };
+    });
 }
 
 export function startRecording() {
