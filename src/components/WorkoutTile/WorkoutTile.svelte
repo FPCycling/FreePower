@@ -2,6 +2,9 @@
     import type { PlannedWorkout } from '../../types/workout';
     import { flattenWorkoutSteps, getStepColor } from '../../utils/workoutUtils';
     import { userFtp } from '../../stores/userSettings';
+    import { mapIntervalsIcuWorkout } from '../../utils/mappers/intervalsIcuMapper';
+    import { writableCurrentWorkout } from '../../routes/workout/_stores/currentWorkout';
+    import { goto } from '$app/navigation';
 
     interface Props {
         workout: PlannedWorkout;
@@ -63,6 +66,7 @@
     let hoveredStep = $state<{ watts: number; time: string; x: number; y: number } | null>(null);
 
     function handleStepHover(event: MouseEvent, watts: number, time: string) {
+        event.stopPropagation(); // Prevent tile click when hovering steps
         const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
         hoveredStep = {
             watts,
@@ -86,9 +90,28 @@
         }
         return `${minutes}m`;
     });
+
+    // Handle clicking the workout tile to select it
+    function handleWorkoutClick() {
+        try {
+            const genericWorkout = mapIntervalsIcuWorkout(workout);
+            writableCurrentWorkout.set(genericWorkout);
+            goto('/workout');
+        } catch (error) {
+            console.error('Failed to load workout:', error);
+        }
+    }
+
+    // Handle keyboard navigation
+    function handleKeyDown(event: KeyboardEvent) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            handleWorkoutClick();
+        }
+    }
 </script>
 
-<div class="workout-tile">
+<div class="workout-tile" onclick={handleWorkoutClick} onkeydown={handleKeyDown} role="button" tabindex="0">
     <div class="workout-header">
         <h3 class="workout-title">{workoutDate()}</h3>
         <p class="workout-subtitle">{formattedTotalDuration()}</p>
@@ -144,11 +167,16 @@
         transition:
             transform 0.2s,
             box-shadow 0.2s;
+        cursor: pointer;
     }
 
     .workout-tile:hover {
         transform: translateY(-4px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .workout-tile:active {
+        transform: translateY(-2px);
     }
 
     .workout-header {
