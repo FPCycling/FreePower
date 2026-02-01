@@ -1,21 +1,10 @@
-import type dayjs from 'dayjs';
 import { writable, derived } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 import { userFtp, difficulty } from '../../../stores/userSettings';
 import type { Workout } from '../../../types/workout';
+import type { GenericWorkout } from '../../../types/genericWorkout';
 
-export interface InnerWorkout {
-    date: dayjs.Dayjs;
-    description: string;
-    workoutData: InnerWorkoutData[];
-}
-
-export interface InnerWorkoutData {
-    startMs: number;
-    percentFtp: number;
-}
-
-let initialWorkout = undefined;
+let initialWorkout: GenericWorkout | undefined = undefined;
 
 if (typeof window !== 'undefined' && window.localStorage) {
     const initialWorkoutString = localStorage.getItem('currentWorkout');
@@ -28,7 +17,7 @@ if (typeof window !== 'undefined' && window.localStorage) {
     }
 }
 
-export const writableCurrentWorkout = writable<InnerWorkout | undefined>(initialWorkout);
+export const writableCurrentWorkout = writable<GenericWorkout | undefined>(initialWorkout);
 writableCurrentWorkout.subscribe((workout) => {
     if (typeof window !== 'undefined' && window.localStorage) {
         localStorage.setItem('currentWorkout', JSON.stringify(workout));
@@ -36,7 +25,7 @@ writableCurrentWorkout.subscribe((workout) => {
 });
 
 export const currentWorkout = derived<
-    [Writable<number | undefined>, Writable<number | undefined>, Writable<InnerWorkout | undefined>],
+    [Writable<number | undefined>, Writable<number | undefined>, Writable<GenericWorkout | undefined>],
     Workout | undefined
 >([userFtp, difficulty, writableCurrentWorkout], ([$userFtp, $difficulty, $currentWorkout]) => {
     if (!$currentWorkout || !$userFtp || !$difficulty) {
@@ -44,12 +33,12 @@ export const currentWorkout = derived<
     }
 
     return {
-        date: $currentWorkout.date,
-        description: $currentWorkout.description,
-        workoutData: $currentWorkout.workoutData.map((data) => ({
-            percentFtp: data.percentFtp,
-            startMs: data.startMs,
-            watts: Math.round((data.percentFtp / 100) * $userFtp * $difficulty),
+        date: undefined as any, // Kept for backwards compatibility, can be removed later
+        description: $currentWorkout.description || '',
+        workoutData: $currentWorkout.intervals.map((interval) => ({
+            percentFtp: interval.percentFtp,
+            startMs: interval.startMs,
+            watts: Math.round((interval.percentFtp / 100) * $userFtp * $difficulty),
         })),
     };
 });
