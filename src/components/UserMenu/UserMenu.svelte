@@ -2,6 +2,7 @@
     import FtpInput from './components/FtpInput.svelte';
     import IntervalsIcuApiKey from './components/IntervalsIcuApiKey.svelte';
     import DebugModeToggle from './components/DebugModeToggle.svelte';
+    import StravaConnect from './components/StravaConnect.svelte';
     import { isDebugAvailable } from '../../stores/userSettings';
 
     interface Props {
@@ -38,6 +39,10 @@
     <div class="p-4 space-y-4">
         <FtpInput />
         <IntervalsIcuApiKey />
+        <div class="border-t border-gray-200 dark:border-neutral-700 pt-3">
+            <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Upload Services</div>
+            <StravaConnect />
+        </div>
         {#if $isDebugAvailable}
             <DebugModeToggle />
         {/if}

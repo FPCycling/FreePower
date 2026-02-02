@@ -8,3 +8,10 @@ export function formatMs(milliseconds: number) {
     if (durationMs.hours() > 0) return durationMs.format('H:mm:ss');
     return durationMs.format('mm:ss');
 }
+
+export function formatTime(seconds: number) {
+    const durationSec = dayjs.duration(seconds, 'seconds');
+
+    if (durationSec.hours() > 0) return durationSec.format('H:mm:ss');
+    return durationSec.format('mm:ss');
+}
