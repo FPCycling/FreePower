@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import type { StravaTokens } from '../utils/auth/stravaAuth';
+import type { RideWithGPSTokens } from '../utils/auth/ridewithgpsAuth';
 
 let initialFtp = 200;
 
@@ -87,6 +88,33 @@ stravaTokens.subscribe((tokens) => {
             localStorage.setItem('stravaTokens', JSON.stringify(tokens));
         } else {
             localStorage.removeItem('stravaTokens');
+        }
+    }
+});
+
+// RideWithGPS Integration
+let initialRideWithGPSTokens: RideWithGPSTokens | null = null;
+
+if (typeof window !== 'undefined' && window.localStorage) {
+    const stored = localStorage.getItem('ridewithgpsTokens');
+    if (stored) {
+        try {
+            initialRideWithGPSTokens = JSON.parse(stored);
+        } catch (error) {
+            console.error('Failed to parse stored RideWithGPS tokens:', error);
+            localStorage.removeItem('ridewithgpsTokens');
+        }
+    }
+}
+
+export const ridewithgpsTokens = writable<RideWithGPSTokens | null>(initialRideWithGPSTokens);
+
+ridewithgpsTokens.subscribe((tokens) => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+        if (tokens) {
+            localStorage.setItem('ridewithgpsTokens', JSON.stringify(tokens));
+        } else {
+            localStorage.removeItem('ridewithgpsTokens');
         }
     }
 });

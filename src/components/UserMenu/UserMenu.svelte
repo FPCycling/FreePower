@@ -3,6 +3,7 @@
     import IntervalsIcuApiKey from './components/IntervalsIcuApiKey.svelte';
     import DebugModeToggle from './components/DebugModeToggle.svelte';
     import StravaConnect from './components/StravaConnect.svelte';
+    import RideWithGPSConnect from './components/RideWithGPSConnect.svelte';
     import { isDebugAvailable } from '../../stores/userSettings';
 
     interface Props {
@@ -34,7 +35,7 @@
 
 <div
     bind:this={menuElement}
-    class="absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white dark:bg-neutral-800 ring-1 ring-black ring-opacity-5 z-50"
+    class="absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white dark:bg-neutral-800 ring-1 ring-black ring-opacity-5 z-50"
 >
     <div class="p-4 space-y-4">
         <FtpInput />
@@ -42,6 +43,7 @@
         <div class="border-t border-gray-200 dark:border-neutral-700 pt-3">
             <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Upload Services</div>
             <StravaConnect />
+            <RideWithGPSConnect />
         </div>
         {#if $isDebugAvailable}
             <DebugModeToggle />

@@ -1,6 +1,6 @@
 <script lang="ts">
     import Button from '../../../components/design/buttons/Button.svelte';
-    import { stravaTokens } from '../../../stores/userSettings';
+    import { stravaTokens, ridewithgpsTokens } from '../../../stores/userSettings';
     import { getRecordingData, getStartTime } from '../_stores/workoutRecording';
     import { generateFitFile, calculateWorkoutStats, downloadFitFile } from '../../../utils/fitFileGenerator';
     import { uploadWorkout, type PlatformUploadResult } from '../../../utils/upload/uploadService';
@@ -21,6 +21,7 @@
     let workoutName = $state(`Indoor Ride - ${new Date().toLocaleDateString()}`);
     let description = $state('');
     let uploadToStrava = $state(!!$stravaTokens);
+    let uploadToRideWithGPS = $state(!!$ridewithgpsTokens);
     let activityType: 'VirtualRide' | 'Ride' = $state('VirtualRide');
 
     // Upload state
@@ -51,6 +52,15 @@
                     tokens: $stravaTokens,
                     onTokenRefresh: (tokens: any) => {
                         stravaTokens.set(tokens);
+                    },
+                };
+            }
+
+            if (uploadToRideWithGPS && $ridewithgpsTokens) {
+                platforms.ridewithgps = {
+                    tokens: $ridewithgpsTokens,
+                    onTokenRefresh: (tokens: any) => {
+                        ridewithgpsTokens.set(tokens);
                     },
                 };
             }
@@ -219,21 +229,36 @@
                 <div class="border-t border-gray-200 dark:border-neutral-700 pt-4">
                     <div class="text-sm font-medium mb-2">Upload to:</div>
 
-                    {#if $stravaTokens}
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" bind:checked={uploadToStrava} class="w-4 h-4" />
-                            <svg class="w-5 h-5 text-[#fc4c02]" viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"
-                                />
-                            </svg>
-                            <span>Strava</span>
-                        </label>
-                    {:else}
-                        <div class="text-sm text-gray-500">
-                            No upload services connected. Connect Strava in the user menu to upload workouts.
-                        </div>
-                    {/if}
+                    <div class="space-y-2">
+                        {#if $stravaTokens}
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" bind:checked={uploadToStrava} class="w-4 h-4" />
+                                <svg class="w-5 h-5 text-[#fc4c02]" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"
+                                    />
+                                </svg>
+                                <span>Strava</span>
+                            </label>
+                        {/if}
+
+                        {#if $ridewithgpsTokens}
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" bind:checked={uploadToRideWithGPS} class="w-4 h-4" />
+                                <svg class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
+                                </svg>
+                                <span>RideWithGPS</span>
+                            </label>
+                        {/if}
+
+                        {#if !$stravaTokens && !$ridewithgpsTokens}
+                            <div class="text-sm text-gray-500">
+                                No upload services connected. Connect Strava or RideWithGPS in the user menu to upload
+                                workouts.
+                            </div>
+                        {/if}
+                    </div>
                 </div>
             </div>
 
@@ -249,7 +274,7 @@
                 <Button onclick={exportFitFile} class="bg-gray-200 dark:bg-neutral-700">Export .FIT File</Button>
                 <Button onclick={handleClose} class="bg-gray-200 dark:bg-neutral-700">Close</Button>
                 <Button onclick={handleSaveAndUpload}>
-                    {uploadToStrava ? 'Save & Upload' : 'Close'}
+                    {uploadToStrava || uploadToRideWithGPS ? 'Save & Upload' : 'Close'}
                 </Button>
             </div>
         {/if}
