@@ -1,5 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { PUBLIC_RIDEWITHGPS_APP_ID } from '$env/static/public';
+import { RIDEWITHGPS_CLIENT_SECRET } from '$env/static/private';
 
 /**
  * Refreshes an expired access token
@@ -12,8 +14,8 @@ export const POST: RequestHandler = async ({ request }) => {
             return json({ error: 'Refresh token is required' }, { status: 400 });
         }
 
-        const clientId = process.env.PUBLIC_RIDEWITHGPS_APP_ID;
-        const clientSecret = process.env.RIDEWITHGPS_CLIENT_SECRET;
+        const clientId = PUBLIC_RIDEWITHGPS_APP_ID;
+        const clientSecret = RIDEWITHGPS_CLIENT_SECRET;
 
         if (!clientId || !clientSecret) {
             return json({ error: 'RideWithGPS credentials not configured' }, { status: 500 });

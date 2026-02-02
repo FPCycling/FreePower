@@ -35,7 +35,7 @@
 
 <div
     bind:this={menuElement}
-    class="absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white dark:bg-neutral-800 ring-1 ring-black ring-opacity-5 z-50"
+    class="absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white dark:bg-neutral-800 ring-1 ring-black ring-opacity-5 z-50"
 >
     <div class="p-4 space-y-4">
         <FtpInput />

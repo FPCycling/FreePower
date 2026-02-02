@@ -5,6 +5,8 @@
  * See: https://ridewithgps.com/api
  */
 
+import { PUBLIC_RIDEWITHGPS_APP_ID } from '$env/static/public';
+
 export interface RideWithGPSTokens {
     access_token: string;
     refresh_token: string;
@@ -16,15 +18,15 @@ export interface RideWithGPSTokens {
  * Initiates RideWithGPS OAuth flow by redirecting to authorization page
  */
 export function initiateRideWithGPSAuth(): void {
-    const clientId = import.meta.env.PUBLIC_RIDEWITHGPS_APP_ID;
+    const clientId = PUBLIC_RIDEWITHGPS_APP_ID;
     const redirectUri = `${window.location.origin}/auth/ridewithgps/callback`;
 
     if (!clientId) {
         throw new Error('RideWithGPS Client ID not configured');
     }
 
-    const scope = 'write';
-    const authUrl = `https://ridewithgps.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}`;
+    // RideWithGPS doesn't require scope parameter or uses different values
+    const authUrl = `https://ridewithgps.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}`;
 
     window.location.href = authUrl;
 }
