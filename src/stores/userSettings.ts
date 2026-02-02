@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import type { StravaTokens } from '../utils/auth/stravaAuth';
 
 let initialFtp = 200;
 
@@ -60,5 +61,50 @@ export const isDebugAvailable = writable<boolean>(initialDebugAvailable);
 isDebugAvailable.subscribe((value) => {
     if (typeof window !== 'undefined' && window.localStorage) {
         localStorage.setItem('isDebugAvailable', value.toString());
+    }
+});
+
+// Strava Integration
+let initialStravaTokens: StravaTokens | null = null;
+
+if (typeof window !== 'undefined' && window.localStorage) {
+    const stored = localStorage.getItem('stravaTokens');
+    if (stored) {
+        try {
+            initialStravaTokens = JSON.parse(stored);
+        } catch (error) {
+            console.error('Failed to parse stored Strava tokens:', error);
+            localStorage.removeItem('stravaTokens');
+        }
+    }
+}
+
+export const stravaTokens = writable<StravaTokens | null>(initialStravaTokens);
+
+stravaTokens.subscribe((tokens) => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+        if (tokens) {
+            localStorage.setItem('stravaTokens', JSON.stringify(tokens));
+        } else {
+            localStorage.removeItem('stravaTokens');
+        }
+    }
+});
+
+// Upload preferences
+let initialAutoUpload = false;
+
+if (typeof window !== 'undefined' && window.localStorage) {
+    const stored = localStorage.getItem('autoUploadEnabled');
+    if (stored !== null) {
+        initialAutoUpload = stored === 'true';
+    }
+}
+
+export const autoUploadEnabled = writable<boolean>(initialAutoUpload);
+
+autoUploadEnabled.subscribe((value) => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('autoUploadEnabled', value.toString());
     }
 });

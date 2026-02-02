@@ -1,3 +1,7 @@
 [build]
   command = "npm run build"
   publish = "build/"
+
+[build.environment]
+  # Temporarily ignore old variable name during cache transition
+  SECRETS_SCAN_OMIT_KEYS = "PUBLIC_STRAVA_CLIENT_ID"
