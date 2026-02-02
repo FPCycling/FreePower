@@ -5,7 +5,7 @@
  * See: https://developers.strava.com/docs/authentication/
  */
 
-import { PUBLIC_STRAVA_CLIENT_ID } from '$env/static/public';
+import { PUBLIC_STRAVA_APP_ID } from '$env/static/public';
 
 export interface StravaTokens {
     access_token: string;
@@ -18,7 +18,7 @@ export interface StravaTokens {
  * Initiates Strava OAuth flow by redirecting to Strava authorization page
  */
 export function initiateStravaAuth(): void {
-    const clientId = PUBLIC_STRAVA_CLIENT_ID;
+    const clientId = PUBLIC_STRAVA_APP_ID;
     const redirectUri = `${window.location.origin}/auth/strava/callback`;
 
     if (!clientId) {

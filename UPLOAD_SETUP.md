@@ -20,7 +20,7 @@
 Open `.env` file and add your credentials:
 
 ```bash
-PUBLIC_STRAVA_CLIENT_ID=your_client_id_here
+PUBLIC_STRAVA_APP_ID=your_client_id_here
 STRAVA_CLIENT_SECRET=your_client_secret_here
 ```
 
@@ -28,7 +28,7 @@ STRAVA_CLIENT_SECRET=your_client_secret_here
 
 1. Go to Netlify Dashboard → Site Settings → Environment Variables
 2. Add the same two variables:
-    - `PUBLIC_STRAVA_CLIENT_ID`
+    - `PUBLIC_STRAVA_APP_ID`
     - `STRAVA_CLIENT_SECRET`
 3. Update Strava app callback domain to include your Netlify domain
 

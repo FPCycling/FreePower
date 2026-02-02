@@ -151,7 +151,7 @@ The types and service layer already support this pattern.
 
 - **Local**: Check that `.env` file exists and contains valid credentials, restart dev server
 - **Production**: Verify environment variables are set in Netlify dashboard
-- Check variable names match exactly: `PUBLIC_STRAVA_CLIENT_ID` and `STRAVA_CLIENT_SECRET`
+- Check variable names match exactly: `PUBLIC_STRAVA_APP_ID` and `STRAVA_CLIENT_SECRET`
 
 ### "Authorization was denied or cancelled"
 
@@ -192,7 +192,7 @@ The types and service layer already support this pattern.
     - Or: Build & deploy → Environment
 
 2. **Add Variables**:
-    - **Key**: `PUBLIC_STRAVA_CLIENT_ID`  
+    - **Key**: `PUBLIC_STRAVA_APP_ID`  
       **Value**: Your Strava Client ID
     - **Key**: `STRAVA_CLIENT_SECRET`  
       **Value**: Your Strava Client Secret

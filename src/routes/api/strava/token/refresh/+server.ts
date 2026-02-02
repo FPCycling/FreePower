@@ -14,9 +14,9 @@ export const POST: RequestHandler = async ({ request }) => {
         }
 
         const STRAVA_CLIENT_SECRET = env.STRAVA_CLIENT_SECRET;
-        const PUBLIC_STRAVA_CLIENT_ID = publicEnv.PUBLIC_STRAVA_CLIENT_ID;
+        const PUBLIC_STRAVA_APP_ID = publicEnv.PUBLIC_STRAVA_APP_ID;
 
-        if (!STRAVA_CLIENT_SECRET || !PUBLIC_STRAVA_CLIENT_ID) {
+        if (!STRAVA_CLIENT_SECRET || !PUBLIC_STRAVA_APP_ID) {
             console.error('Missing Strava credentials');
             return json({ error: 'Server configuration error' }, { status: 500 });
         }
@@ -27,7 +27,7 @@ export const POST: RequestHandler = async ({ request }) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                client_id: PUBLIC_STRAVA_CLIENT_ID,
+                client_id: PUBLIC_STRAVA_APP_ID,
                 client_secret: STRAVA_CLIENT_SECRET,
                 refresh_token,
                 grant_type: 'refresh_token',
