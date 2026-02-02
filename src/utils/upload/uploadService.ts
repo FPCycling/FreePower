@@ -1,12 +1,14 @@
 /**
  * Upload Service
- * 
- * Orchestrates uploads to multiple platforms (currently Strava, extensible for RideWithGPS)
+ *
+ * Orchestrates uploads to multiple platforms (Strava and RideWithGPS)
  */
 
 import type { StravaTokens } from '../auth/stravaAuth';
+import type { RideWithGPSTokens } from '../auth/ridewithgpsAuth';
 import { refreshStravaToken } from '../auth/stravaAuth';
 import { uploadToStrava, type StravaUploadOptions, type StravaUploadResult } from './stravaUpload';
+import { uploadToRideWithGPS, type RideWithGPSUploadOptions, type RideWithGPSUploadResult } from './ridewithgpsUpload';
 
 export interface UploadOptions {
     name: string;
@@ -36,33 +38,26 @@ export async function uploadWorkout(
     options: UploadOptions,
     platforms: {
         strava?: { tokens: StravaTokens; onTokenRefresh: (tokens: StravaTokens) => void };
-        // ridewithgps?: { tokens: RideWithGPSTokens; onTokenRefresh: (tokens: RideWithGPSTokens) => void };
-    }
+        ridewithgps?: { tokens: RideWithGPSTokens; onTokenRefresh: (tokens: RideWithGPSTokens) => void };
+    },
 ): Promise<MultiUploadResult> {
     const results: PlatformUploadResult[] = [];
 
     // Upload to Strava if configured
     if (platforms.strava) {
         try {
-            const stravaResult = await uploadToStrava(
-                fitBlob,
-                platforms.strava.tokens,
-                {
-                    name: options.name,
-                    description: options.description,
-                    activityType: options.activityType,
-                    trainer: options.trainer,
-                }
-            );
-
-            // Check if token was refreshed and update if needed
-            // This is a simplified approach - in production you might want more sophisticated token management
+            const stravaResult = await uploadToStrava(fitBlob, platforms.strava.tokens, {
+                name: options.name,
+                description: options.description,
+                activityType: options.activityType,
+                trainer: options.trainer,
+            });
 
             results.push({
                 platform: 'strava',
                 success: stravaResult.success,
                 activityId: stravaResult.activityId,
-                activityUrl: stravaResult.activityId 
+                activityUrl: stravaResult.activityId
                     ? `https://www.strava.com/activities/${stravaResult.activityId}`
                     : undefined,
                 error: stravaResult.error,
@@ -76,8 +71,30 @@ export async function uploadWorkout(
         }
     }
 
-    // Future: Upload to RideWithGPS
-    // if (platforms.ridewithgps) { ... }
+    // Upload to RideWithGPS if configured
+    if (platforms.ridewithgps) {
+        try {
+            const rwgpsResult = await uploadToRideWithGPS(fitBlob, platforms.ridewithgps.tokens, {
+                name: options.name,
+                description: options.description,
+                visibility: 0, // public by default
+            });
+
+            results.push({
+                platform: 'ridewithgps',
+                success: rwgpsResult.success,
+                activityId: rwgpsResult.tripId,
+                activityUrl: rwgpsResult.tripId ? `https://ridewithgps.com/trips/${rwgpsResult.tripId}` : undefined,
+                error: rwgpsResult.error,
+            });
+        } catch (error) {
+            results.push({
+                platform: 'ridewithgps',
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown error',
+            });
+        }
+    }
 
     const allSuccessful = results.every((r) => r.success);
 
