@@ -6,7 +6,6 @@
     import Stats from './_components/Stats.svelte';
     import { handlePairHrClick } from './_stores/heartRate';
     import { handlePairTrainerClick } from './_stores/trainer';
-    import FitExporter from './_components/FitExporter.svelte';
     import CompleteWorkout from './_components/CompleteWorkout.svelte';
     import Button from '../../components/design/buttons/Button.svelte';
     import { workoutRecording, RecordingStatus } from './_stores/workoutRecording';
@@ -60,8 +59,6 @@
 {#if Chart}
     <Chart data={$currentWorkout?.workoutData} currentTime={$currentTime} />
 {/if}
-
-<FitExporter />
 
 {#if showCompleteOverlay}
     <CompleteWorkout onClose={handleCloseComplete} />

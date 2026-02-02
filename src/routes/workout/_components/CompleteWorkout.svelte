@@ -2,7 +2,7 @@
     import Button from '../../../components/design/buttons/Button.svelte';
     import { stravaTokens } from '../../../stores/userSettings';
     import { getRecordingData, getStartTime } from '../_stores/workoutRecording';
-    import { generateFitFile, calculateWorkoutStats } from '../../../utils/fitFileGenerator';
+    import { generateFitFile, calculateWorkoutStats, downloadFitFile } from '../../../utils/fitFileGenerator';
     import { uploadWorkout, type PlatformUploadResult } from '../../../utils/upload/uploadService';
     import { formatTime } from '../../../utils/time';
 
@@ -107,6 +107,22 @@
     // Format distance
     function formatDistance(meters: number): string {
         return (meters / 1000).toFixed(2);
+    }
+
+    // Export FIT file
+    function exportFitFile() {
+        if (!startTime || !dataPoints.length) {
+            alert('No workout data to export');
+            return;
+        }
+
+        try {
+            const fitBlob = generateFitFile(dataPoints, startTime);
+            downloadFitFile(fitBlob, startTime);
+        } catch (error) {
+            console.error('Error generating FIT file:', error);
+            alert('Error generating FIT file. Check console for details.');
+        }
     }
 </script>
 
@@ -230,6 +246,7 @@
 
             <!-- Action buttons -->
             <div class="flex justify-end gap-3">
+                <Button onclick={exportFitFile} class="bg-gray-200 dark:bg-neutral-700">Export .FIT File</Button>
                 <Button onclick={handleClose} class="bg-gray-200 dark:bg-neutral-700">Close</Button>
                 <Button onclick={handleSaveAndUpload}>
                     {uploadToStrava ? 'Save & Upload' : 'Close'}
