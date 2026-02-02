@@ -1,9 +1,11 @@
 /**
  * Strava OAuth 2.0 Authentication Utilities
- * 
+ *
  * Handles OAuth flow for Strava API authentication.
  * See: https://developers.strava.com/docs/authentication/
  */
+
+import { PUBLIC_STRAVA_CLIENT_ID } from '$env/static/public';
 
 export interface StravaTokens {
     access_token: string;
@@ -16,16 +18,16 @@ export interface StravaTokens {
  * Initiates Strava OAuth flow by redirecting to Strava authorization page
  */
 export function initiateStravaAuth(): void {
-    const clientId = import.meta.env.PUBLIC_STRAVA_CLIENT_ID;
+    const clientId = PUBLIC_STRAVA_CLIENT_ID;
     const redirectUri = `${window.location.origin}/auth/strava/callback`;
-    
+
     if (!clientId) {
         throw new Error('Strava Client ID not configured');
     }
 
     const scope = 'activity:write,activity:read';
     const authUrl = `https://www.strava.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&approval_prompt=auto&scope=${scope}`;
-    
+
     window.location.href = authUrl;
 }
 
@@ -48,7 +50,7 @@ export async function exchangeCodeForToken(code: string): Promise<StravaTokens> 
     }
 
     const data = await response.json();
-    
+
     return {
         access_token: data.access_token,
         refresh_token: data.refresh_token,
@@ -75,7 +77,7 @@ export async function refreshStravaToken(refreshToken: string): Promise<StravaTo
     }
 
     const data = await response.json();
-    
+
     return {
         access_token: data.access_token,
         refresh_token: data.refresh_token,
@@ -89,7 +91,7 @@ export async function refreshStravaToken(refreshToken: string): Promise<StravaTo
 export function isTokenExpired(expiresAt: number): boolean {
     const now = Math.floor(Date.now() / 1000);
     const fiveMinutes = 5 * 60;
-    return expiresAt <= (now + fiveMinutes);
+    return expiresAt <= now + fiveMinutes;
 }
 
 /**
@@ -112,7 +114,7 @@ export async function revokeStravaAuth(accessToken: string): Promise<void> {
         await fetch('https://www.strava.com/oauth/deauthorize', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${accessToken}`,
+                Authorization: `Bearer ${accessToken}`,
             },
         });
     } catch (error) {
