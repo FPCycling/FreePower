@@ -26,7 +26,7 @@ Automatic upload of completed workouts to Strava. Architecture supports extendin
 1. Open `.env` and add your Strava credentials:
 
     ```
-    PUBLIC_STRAVA_CLIENT_ID=your_client_id_here
+    PUBLIC_STRAVA_APP_ID=your_client_id_here
     STRAVA_CLIENT_SECRET=your_client_secret_here
     ```
 
