@@ -1,3 +1,5 @@
 See site here: https://freepower.netlify.app/
 
-You need to update the local storage key 'userFtp' with your FTP for it to work.
+Add your api key from https://intervals.icu/ to load workouts.
+
+Strava integration is not working because the app is not approved by Strava. You can still download .fit files at the end of your workout, and upload manually to Strava after.
