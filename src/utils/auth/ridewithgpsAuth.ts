@@ -107,6 +107,17 @@ export async function getValidAccessToken(tokens: RideWithGPSTokens): Promise<st
 }
 
 /**
+ * Ensures tokens are valid, returning refreshed tokens if needed
+ * Use this when you need both the access token and updated token info
+ */
+export async function ensureValidTokens(tokens: RideWithGPSTokens): Promise<RideWithGPSTokens> {
+    if (isTokenExpired(tokens.expires_at)) {
+        return await refreshRideWithGPSToken(tokens.refresh_token);
+    }
+    return tokens;
+}
+
+/**
  * Revokes RideWithGPS authorization
  */
 export async function revokeRideWithGPSAuth(accessToken: string): Promise<void> {

@@ -74,11 +74,18 @@ export async function uploadWorkout(
     // Upload to RideWithGPS if configured
     if (platforms.ridewithgps) {
         try {
-            const rwgpsResult = await uploadToRideWithGPS(fitBlob, platforms.ridewithgps.tokens, {
-                name: options.name,
-                description: options.description,
-                visibility: 0, // public by default
-            });
+            const rwgpsResult = await uploadToRideWithGPS(
+                fitBlob,
+                platforms.ridewithgps.tokens,
+                {
+                    name: options.name,
+                    description: options.description,
+                    visibility: 0, // public by default
+                },
+                {
+                    onTokenRefresh: platforms.ridewithgps.onTokenRefresh,
+                },
+            );
 
             results.push({
                 platform: 'ridewithgps',
