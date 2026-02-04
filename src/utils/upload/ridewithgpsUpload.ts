@@ -19,6 +19,10 @@ export interface RideWithGPSUploadResult {
     error?: string;
 }
 
+export interface RideWithGPSUploadContext {
+    onTokenRefresh?: (tokens: RideWithGPSTokens) => void;
+}
+
 /**
  * Uploads a FIT file to RideWithGPS
  */
@@ -26,10 +30,23 @@ export async function uploadToRideWithGPS(
     fitBlob: Blob,
     tokens: RideWithGPSTokens,
     options: RideWithGPSUploadOptions,
+    context?: RideWithGPSUploadContext,
 ): Promise<RideWithGPSUploadResult> {
     try {
+        // Check if refresh token is present
+        if (!tokens.refresh_token) {
+            throw new Error('Refresh token required');
+        }
+
         // Get a valid access token (refresh if needed)
         const accessToken = await getValidAccessToken(tokens);
+
+        // If token was refreshed, notify the caller to update stored tokens
+        // We need to check if a refresh happened by comparing expiry times
+        const updatedTokens = await ensureValidTokens(tokens);
+        if (updatedTokens !== tokens && context?.onTokenRefresh) {
+            context.onTokenRefresh(updatedTokens);
+        }
 
         const formData = new FormData();
         formData.append('file', fitBlob, 'workout.fit');

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { intervalsIcuApiKey } from '../../../stores/userSettings';
     import { getAthleteProfile } from '../../../utils/intervalsIcuApi';
+    import Button from '../../design/buttons/Button.svelte';
 
     let apiKeyValue = $state($intervalsIcuApiKey || '');
     let testResult = $state('');
@@ -46,13 +47,14 @@
         class="block w-full rounded-md border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-200 shadow-sm focus:border-pink-300 focus:ring focus:ring-pink-200 focus:ring-opacity-50 px-3 py-2 text-sm"
     />
     <div class="flex items-center gap-2 mt-2">
-        <button
+        <Button
             onclick={testApiConnection}
-            disabled={testLoading || !apiKeyValue}
-            class="flex-1 px-3 py-2 text-xs font-medium rounded-md transition-colors bg-pink-600 text-white hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="flex-1 text-xs {testLoading || !apiKeyValue
+                ? 'opacity-50 cursor-not-allowed pointer-events-none'
+                : ''}"
         >
             {testLoading ? 'Testing...' : 'Test API Connection'}
-        </button>
+        </Button>
         {#if testResult === 'Successful'}
             <span class="text-green-600 dark:text-green-400 text-sm">✓</span>
         {:else if testResult === 'Error'}
