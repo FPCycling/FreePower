@@ -46,6 +46,6 @@
         "@fontsource/fira-mono": "^5.0.0",
         "@lukeed/uuid": "^2.0.1",
         "@markw65/fit-file-writer": "^0.1.7",
-        "cookie": "^0.6.0"
+        "cookie": "^0.7.0"
     }
 }
