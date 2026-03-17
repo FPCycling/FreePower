@@ -1,6 +1,5 @@
 <script lang="ts">
     import { difficulty } from '../stores/userSettings';
-    import Button from './design/buttons/Button.svelte';
 
     let { title, subTitle = undefined, children }: { title: string; subTitle?: string; children?: any } = $props();
 
@@ -18,9 +17,39 @@
         <p class="text-neutral-600 font-bold text-xs sm:text-sm -mt-0.5 sm:-mt-1.5 pt-0.5 -mb-0.5">{subTitle}</p>
     {/if}
     {#if isTarget}
-        <p class="flex flex-col absolute right-1 sm:right-3 top-[25%]">
-            <Button kind="minimal" onclick={() => difficulty.update((d) => (d || 1) + 0.05)}>+</Button>
-            <Button kind="minimal" onclick={() => difficulty.update((d) => (d || 1) - 0.05)}>-</Button>
-        </p>
+        <div class="flex gap-0.5 absolute right-1 sm:right-2 top-1/4">
+            <div class="flex flex-col">
+                <button
+                    title="+1%"
+                    type="button"
+                    onclick={() => difficulty.update((d) => (d || 1) + 0.01)}
+                    class="text-pink-300/50 hover:text-pink-300 hover:bg-neutral-200 dark:hover:bg-neutral-800 active:bg-neutral-300 dark:active:bg-neutral-700 rounded-sm px-1.5 py-1 text-xs font-medium leading-none"
+                    >+</button
+                >
+                <button
+                    title="-1%"
+                    type="button"
+                    onclick={() => difficulty.update((d) => (d || 1) - 0.01)}
+                    class="text-pink-300/50 hover:text-pink-300 hover:bg-neutral-200 dark:hover:bg-neutral-800 active:bg-neutral-300 dark:active:bg-neutral-700 rounded-sm px-1.5 py-1 text-xs font-medium leading-none"
+                    >−</button
+                >
+            </div>
+            <div class="flex flex-col">
+                <button
+                    title="+5%"
+                    type="button"
+                    onclick={() => difficulty.update((d) => (d || 1) + 0.05)}
+                    class="text-pink-300 hover:bg-neutral-200 dark:hover:bg-neutral-800 active:bg-neutral-300 dark:active:bg-neutral-700 rounded-sm px-1.5 py-1 text-sm font-medium leading-none"
+                    >+</button
+                >
+                <button
+                    title="-5%"
+                    type="button"
+                    onclick={() => difficulty.update((d) => (d || 1) - 0.05)}
+                    class="text-pink-300 hover:bg-neutral-200 dark:hover:bg-neutral-800 active:bg-neutral-300 dark:active:bg-neutral-700 rounded-sm px-1.5 py-1 text-sm font-medium leading-none"
+                    >−</button
+                >
+            </div>
+        </div>
     {/if}
 </div>
