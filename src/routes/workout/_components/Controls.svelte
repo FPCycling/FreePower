@@ -32,7 +32,7 @@
     }
 </script>
 
-<div class="grid grid-cols-7 gap-5">
+<div class="flex flex-wrap gap-2">
     <Button onclick={handleStart}>Start</Button>
     <Button onclick={handlePause}>Pause</Button>
     <Button kind="danger" onclick={handleReset}>Reset</Button>

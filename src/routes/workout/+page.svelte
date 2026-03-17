@@ -47,7 +47,7 @@
     onDestroy(destroyWorkoutOrchestrator);
 </script>
 
-<div class="flex justify-between">
+<div class="flex flex-wrap items-center justify-between gap-2">
     <div>
         <Controls />
     </div>
