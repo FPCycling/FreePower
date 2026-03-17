@@ -1,11 +1,10 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 import type { TrainerMetrics } from '../_types/trainer';
 
 interface DebugModeState {
     enabled: boolean;
     fakeHeartRate: number;
     fakeTrainerMetrics: TrainerMetrics;
-    interval: NodeJS.Timeout | null;
 }
 
 const initialState: DebugModeState = {
@@ -17,7 +16,6 @@ const initialState: DebugModeState = {
         speed: 8.5,
         distance: 0,
     },
-    interval: null,
 };
 
 const _debugMode = writable<DebugModeState>(initialState);
@@ -71,28 +69,12 @@ function updateFakeData() {
     });
 }
 
-export function toggleDebugMode() {
+export function toggleDebugMode(): void {
     _debugMode.update((state) => {
         const newEnabled = !state.enabled;
-
-        // Clear existing interval if any
-        if (state.interval) {
-            clearInterval(state.interval);
-        }
-
-        let newInterval: NodeJS.Timeout | null = null;
-
-        if (newEnabled) {
-            // Start generating fake data every second
-            newInterval = setInterval(() => {
-                updateFakeData();
-            }, 1000);
-        }
-
         return {
             ...state,
             enabled: newEnabled,
-            interval: newInterval,
             // Reset values when enabling debug mode
             ...(newEnabled
                 ? {
@@ -107,6 +89,12 @@ export function toggleDebugMode() {
                 : {}),
         };
     });
+}
+
+export function onDebugTick(): void {
+    if (get(_debugMode).enabled) {
+        updateFakeData();
+    }
 }
 
 export function setDebugHeartRate(hr: number) {
