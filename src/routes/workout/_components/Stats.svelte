@@ -12,7 +12,7 @@
 </script>
 
 <div class="grid grid-rows-2 gap-0.5 pt-5">
-    <div class="grid grid-cols-3 gap-0.5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0.5">
         <LargeTile title="Power">
             {formatNumber($trainerMetrics.power)}
         </LargeTile>
@@ -22,7 +22,7 @@
         <LargeTile title="Heart rate">{formatNumber($heartRate)}</LargeTile>
     </div>
 
-    <div class="grid grid-cols-3 gap-0.5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0.5">
         <LargeTile title="Target">{$currentWatts}</LargeTile>
         <LargeTile title="Time">{formatMs($currentTime)}</LargeTile>
         <LargeTile title="Cadence">
