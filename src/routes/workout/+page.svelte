@@ -9,12 +9,14 @@
     import CompleteWorkout from './_components/CompleteWorkout.svelte';
     import Button from '../../components/design/buttons/Button.svelte';
     import { workoutRecording, RecordingStatus } from './_stores/workoutRecording';
+    import { initWorkoutOrchestrator, destroyWorkoutOrchestrator } from './_stores/workoutOrchestrator';
 
     let Chart: any = $state();
     let showCompleteOverlay = $state(false);
     let previousStatus: RecordingStatus | null = null;
 
     onMount(async () => {
+        initWorkoutOrchestrator();
         Chart = (await import('./_components/Chart.svelte')).default;
 
         currentWatts.subscribe(() => {
@@ -42,10 +44,10 @@
         showCompleteOverlay = false;
     }
 
-    onDestroy(currentTime.pause);
+    onDestroy(destroyWorkoutOrchestrator);
 </script>
 
-<div class="flex justify-between">
+<div class="flex flex-wrap items-center justify-between gap-2">
     <div>
         <Controls />
     </div>

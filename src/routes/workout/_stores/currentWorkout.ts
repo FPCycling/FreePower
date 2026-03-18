@@ -43,38 +43,25 @@ export const currentWorkout = derived<
     };
 });
 
-function createCurrentTime() {
-    const { subscribe, set, update } = writable(0);
-    let interval: NodeJS.Timeout | undefined;
-    return {
-        subscribe,
-        start: () => {
-            if (!interval) {
-                interval = setInterval(() => {
-                    update((t) => t + 100);
-                }, 100);
-            }
-        },
-        pause: () => {
-            if (interval) {
-                clearInterval(interval);
-            }
-            interval = undefined;
-        },
-        reset: () => {
-            if (interval) {
-                clearInterval(interval);
-            }
-            interval = undefined;
-            set(0);
-        },
-        add: (addMs: number) => {
-            update((t) => t + addMs);
-        },
-    };
+let _worker: Worker | null = null;
+
+export function _setWorker(w: Worker | null): void {
+    _worker = w;
 }
 
-export const currentTime = createCurrentTime();
+const _currentTimeStore = writable(0);
+
+export function setCurrentTimeMs(ms: number): void {
+    _currentTimeStore.set(ms);
+}
+
+export const currentTime = {
+    subscribe: _currentTimeStore.subscribe,
+    start: () => _worker?.postMessage({ type: 'start' }),
+    pause: () => _worker?.postMessage({ type: 'pause' }),
+    reset: () => _worker?.postMessage({ type: 'reset' }),
+    add: (addMs: number) => _worker?.postMessage({ type: 'add', ms: addMs }),
+};
 
 export const currentWatts = derived([currentWorkout, currentTime], ([$currentWorkout, $currentTime]) => {
     if (!$currentWorkout) {

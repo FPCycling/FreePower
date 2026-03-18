@@ -24,7 +24,6 @@ interface WorkoutRecordingState {
     status: RecordingStatus;
     dataPoints: WorkoutDataPoint[];
     startTime: Date | null;
-    recordingInterval: NodeJS.Timeout | null;
     elapsedTime: number; // real elapsed time in seconds
 }
 
@@ -32,7 +31,6 @@ const initialState: WorkoutRecordingState = {
     status: RecordingStatus.NotStarted,
     dataPoints: [],
     startTime: null,
-    recordingInterval: null,
     elapsedTime: 0,
 };
 
@@ -47,14 +45,14 @@ export const workoutRecording = derived([_workoutRecording], ([$_workoutRecordin
     };
 });
 
-function collectDataPoint() {
+function collectDataPoint(elapsedSeconds: number): void {
     const $heartRate = get(heartRate);
     const $trainerMetrics = get(trainerMetrics);
     const $currentWatts = get(currentWatts);
 
     _workoutRecording.update((state) => {
         const dataPoint: WorkoutDataPoint = {
-            timestamp: state.elapsedTime, // use real elapsed time
+            timestamp: elapsedSeconds,
             power: $trainerMetrics.power >= 0 ? $trainerMetrics.power : 0,
             heartRate: $heartRate >= 0 ? $heartRate : 0,
             cadence: $trainerMetrics.cadence >= 0 ? $trainerMetrics.cadence : 0,
@@ -66,71 +64,43 @@ function collectDataPoint() {
         return {
             ...state,
             dataPoints: [...state.dataPoints, dataPoint],
-            elapsedTime: state.elapsedTime + 1, // increment by 1 second
+            elapsedTime: elapsedSeconds,
         };
     });
 }
 
-export function startRecording() {
-    _workoutRecording.update((state) => {
-        // Clear any existing interval
-        if (state.recordingInterval) {
-            clearInterval(state.recordingInterval);
-        }
-
-        // Start collecting data points every 1 second
-        const interval = setInterval(() => {
-            collectDataPoint();
-        }, 1000);
-
-        return {
-            ...state,
-            status: RecordingStatus.Recording,
-            startTime: state.startTime || new Date(),
-            recordingInterval: interval,
-        };
-    });
+export function onRecordingTick(elapsedSeconds: number): void {
+    if (get(_workoutRecording).status === RecordingStatus.Recording) {
+        collectDataPoint(elapsedSeconds);
+    }
 }
 
-export function pauseRecording() {
-    _workoutRecording.update((state) => {
-        if (state.recordingInterval) {
-            clearInterval(state.recordingInterval);
-        }
-
-        return {
-            ...state,
-            status: RecordingStatus.Paused,
-            recordingInterval: null,
-        };
-    });
+export function startRecording(): void {
+    _workoutRecording.update((state) => ({
+        ...state,
+        status: RecordingStatus.Recording,
+        startTime: state.startTime || new Date(),
+    }));
 }
 
-export function stopRecording() {
-    _workoutRecording.update((state) => {
-        if (state.recordingInterval) {
-            clearInterval(state.recordingInterval);
-        }
-
-        // Collect one final data point
-        collectDataPoint();
-
-        return {
-            ...state,
-            status: RecordingStatus.Completed,
-            recordingInterval: null,
-        };
-    });
+export function pauseRecording(): void {
+    _workoutRecording.update((state) => ({
+        ...state,
+        status: RecordingStatus.Paused,
+    }));
 }
 
-export function resetRecording() {
-    _workoutRecording.update((state) => {
-        if (state.recordingInterval) {
-            clearInterval(state.recordingInterval);
-        }
+export function stopRecording(): void {
+    const currentState = get(_workoutRecording);
+    collectDataPoint(currentState.elapsedTime);
+    _workoutRecording.update((state) => ({
+        ...state,
+        status: RecordingStatus.Completed,
+    }));
+}
 
-        return initialState;
-    });
+export function resetRecording(): void {
+    _workoutRecording.set(initialState);
 }
 
 export function getRecordingData(): WorkoutDataPoint[] {
