@@ -44,9 +44,7 @@
             // Get today's date in ISO format (YYYY-MM-DD)
             const today = new Date().toISOString().split('T')[0];
             // Get date 30 days from now
-            const futureDate = new Date();
-            futureDate.setDate(futureDate.getDate() + 30);
-            const newest = futureDate.toISOString().split('T')[0];
+            const newest = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
             const workouts = await fetchUpcomingWorkouts(apiKey, today, newest);
 

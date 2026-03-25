@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
     import { exchangeCodeForToken } from '../../../../utils/auth/ridewithgpsAuth';
     import { ridewithgpsTokens } from '../../../../stores/userSettings';
 
@@ -29,7 +30,7 @@
 
             // Redirect back to main page after a short delay
             setTimeout(() => {
-                goto('/');
+                goto(resolve('/'));
             }, 2000);
         } catch (err) {
             error = err instanceof Error ? err.message : 'Failed to connect to RideWithGPS';
@@ -47,7 +48,7 @@
                 </svg>
                 <h2 class="text-xl font-bold text-red-600 mb-2">Connection Failed</h2>
                 <p class="text-gray-600 dark:text-gray-400">{error}</p>
-                <a href="/" class="mt-4 inline-block text-blue-600 hover:underline">Return Home</a>
+                <a href={resolve('/')} class="mt-4 inline-block text-blue-600 hover:underline">Return Home</a>
             </div>
         {:else if success}
             <div class="text-center">

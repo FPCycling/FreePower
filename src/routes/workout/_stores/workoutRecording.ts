@@ -2,6 +2,8 @@ import { writable, derived, get } from 'svelte/store';
 import { heartRate } from './heartRate';
 import { trainerMetrics } from './trainer';
 import { currentWatts } from './currentWorkout';
+import { riderWeightKg } from '../../../stores/userSettings';
+import { powerToSpeed } from '../../../utils/workoutUtils';
 
 export interface WorkoutDataPoint {
     timestamp: number; // seconds since workout start
@@ -49,15 +51,20 @@ function collectDataPoint(elapsedSeconds: number): void {
     const $heartRate = get(heartRate);
     const $trainerMetrics = get(trainerMetrics);
     const $currentWatts = get(currentWatts);
+    const $riderWeightKg = get(riderWeightKg);
 
     _workoutRecording.update((state) => {
+        const power = $trainerMetrics.power >= 0 ? $trainerMetrics.power : 0;
+        const speed = powerToSpeed(power, $riderWeightKg);
+        const prevDistance = state.dataPoints[state.dataPoints.length - 1]?.distance ?? 0;
+
         const dataPoint: WorkoutDataPoint = {
             timestamp: elapsedSeconds,
-            power: $trainerMetrics.power >= 0 ? $trainerMetrics.power : 0,
+            power,
             heartRate: $heartRate >= 0 ? $heartRate : 0,
             cadence: $trainerMetrics.cadence >= 0 ? $trainerMetrics.cadence : 0,
-            speed: $trainerMetrics.speed >= 0 ? $trainerMetrics.speed : 0,
-            distance: $trainerMetrics.distance >= 0 ? $trainerMetrics.distance : 0,
+            speed,
+            distance: prevDistance + speed, // cumulative meters (1 tick = 1 second)
             targetPower: $currentWatts || 0,
         };
 

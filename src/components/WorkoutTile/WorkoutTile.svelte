@@ -5,6 +5,7 @@
     import { mapIntervalsIcuWorkout } from '../../utils/mappers/intervalsIcuMapper';
     import { writableCurrentWorkout } from '../../routes/workout/_stores/currentWorkout';
     import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
 
     interface Props {
         workout: PlannedWorkout;
@@ -96,7 +97,7 @@
         try {
             const genericWorkout = mapIntervalsIcuWorkout(workout);
             writableCurrentWorkout.set(genericWorkout);
-            goto('/workout');
+            goto(resolve('/workout'));
         } catch (error) {
             console.error('Failed to load workout:', error);
         }

@@ -21,8 +21,6 @@ export const POST: RequestHandler = async ({ request }) => {
             return json({ error: 'Server configuration error' }, { status: 500 });
         }
 
-        const redirectUri = `${request.url.split('/api')[0]}/auth/strava/callback`;
-
         const response = await fetch('https://www.strava.com/oauth/token', {
             method: 'POST',
             headers: {
