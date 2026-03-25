@@ -21,6 +21,25 @@ userFtp.subscribe((ftp) => {
     }
 });
 
+let initialRiderWeight = 75;
+
+if (typeof window !== 'undefined' && window.localStorage) {
+    const storedWeight = localStorage.getItem('riderWeightKg');
+    if (storedWeight) {
+        initialRiderWeight = Number(storedWeight);
+    } else {
+        localStorage.setItem('riderWeightKg', '75');
+    }
+}
+
+export const riderWeightKg = writable<number>(initialRiderWeight);
+
+riderWeightKg.subscribe((weight) => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('riderWeightKg', `${weight}`);
+    }
+});
+
 export const difficulty = writable<number | undefined>(1);
 
 // Intervals.icu API Key

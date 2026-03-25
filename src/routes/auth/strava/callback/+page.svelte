@@ -3,6 +3,7 @@
     import { exchangeCodeForToken } from '../../../../utils/auth/stravaAuth';
     import { stravaTokens } from '../../../../stores/userSettings';
     import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
 
     let status: 'loading' | 'success' | 'error' = 'loading';
     let errorMessage = '';
@@ -16,32 +17,32 @@
         if (error) {
             status = 'error';
             errorMessage = 'Authorization was denied or cancelled';
-            setTimeout(() => goto('/'), 3000);
+            setTimeout(() => goto(resolve('/')), 3000);
             return;
         }
 
         if (!code) {
             status = 'error';
             errorMessage = 'No authorization code received';
-            setTimeout(() => goto('/'), 3000);
+            setTimeout(() => goto(resolve('/')), 3000);
             return;
         }
 
         try {
             // Exchange code for tokens
             const tokens = await exchangeCodeForToken(code);
-            
+
             // Save tokens to store (which persists to localStorage)
             stravaTokens.set(tokens);
-            
+
             status = 'success';
-            
+
             // Redirect back to home page after 2 seconds
-            setTimeout(() => goto('/'), 2000);
+            setTimeout(() => goto(resolve('/')), 2000);
         } catch (err) {
             status = 'error';
             errorMessage = err instanceof Error ? err.message : 'Failed to authenticate with Strava';
-            setTimeout(() => goto('/'), 3000);
+            setTimeout(() => goto(resolve('/')), 3000);
         }
     });
 </script>
@@ -65,7 +66,8 @@
         {:else}
             <div class="mb-4">
                 <svg class="w-16 h-16 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"
+                    ></path>
                 </svg>
             </div>
             <h1 class="text-2xl font-bold mb-2 text-red-600">Connection Failed</h1>

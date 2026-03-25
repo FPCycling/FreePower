@@ -1,6 +1,6 @@
 /**
  * FIT File Generation Utilities
- * 
+ *
  * Extracts FIT file generation logic for reuse across download and upload features
  */
 
@@ -25,22 +25,20 @@ export interface WorkoutStats {
  */
 export function calculateWorkoutStats(dataPoints: WorkoutDataPoint[]): WorkoutStats {
     const lastDataPoint = dataPoints[dataPoints.length - 1];
-    
+
     const totalDuration = lastDataPoint?.timestamp || 0;
     const avgPower = dataPoints.reduce((sum, dp) => sum + dp.power, 0) / dataPoints.length;
     const maxPower = Math.max(...dataPoints.map((dp) => dp.power));
-    
+
     const hrPoints = dataPoints.filter((dp) => dp.heartRate > 0);
-    const avgHeartRate = hrPoints.length > 0
-        ? hrPoints.reduce((sum, dp) => sum + dp.heartRate, 0) / hrPoints.length
-        : 0;
+    const avgHeartRate =
+        hrPoints.length > 0 ? hrPoints.reduce((sum, dp) => sum + dp.heartRate, 0) / hrPoints.length : 0;
     const maxHeartRate = Math.max(...dataPoints.map((dp) => dp.heartRate));
-    
+
     const cadencePoints = dataPoints.filter((dp) => dp.cadence > 0);
-    const avgCadence = cadencePoints.length > 0
-        ? cadencePoints.reduce((sum, dp) => sum + dp.cadence, 0) / cadencePoints.length
-        : 0;
-    
+    const avgCadence =
+        cadencePoints.length > 0 ? cadencePoints.reduce((sum, dp) => sum + dp.cadence, 0) / cadencePoints.length : 0;
+
     const totalDistance = lastDataPoint?.distance || 0;
 
     return {
@@ -57,10 +55,7 @@ export function calculateWorkoutStats(dataPoints: WorkoutDataPoint[]): WorkoutSt
 /**
  * Generate a FIT file blob from workout data
  */
-export function generateFitFile(
-    dataPoints: WorkoutDataPoint[],
-    startTime: Date
-): Blob {
+export function generateFitFile(dataPoints: WorkoutDataPoint[], startTime: Date): Blob {
     if (!dataPoints.length || !startTime) {
         throw new Error('No workout data to export');
     }

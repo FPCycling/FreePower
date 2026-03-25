@@ -1,11 +1,11 @@
 /**
  * Strava API Upload Utilities
- * 
+ *
  * Handles uploading activities to Strava
  * See: https://developers.strava.com/docs/reference/#api-Uploads
  */
 
-import { getValidAccessToken, refreshStravaToken, type StravaTokens } from '../auth/stravaAuth';
+import { getValidAccessToken, type StravaTokens } from '../auth/stravaAuth';
 
 export interface StravaUploadOptions {
     name: string;
@@ -27,28 +27,28 @@ export interface StravaUploadResult {
 export async function uploadToStrava(
     fitBlob: Blob,
     tokens: StravaTokens,
-    options: StravaUploadOptions
+    options: StravaUploadOptions,
 ): Promise<StravaUploadResult> {
     try {
         // Get a valid access token (refresh if needed)
-        let accessToken = await getValidAccessToken(tokens);
-        
+        const accessToken = await getValidAccessToken(tokens);
+
         // If token was refreshed, we need to get the new tokens
         // This will be handled by the upload service that calls this function
-        
+
         const formData = new FormData();
         formData.append('file', fitBlob, 'workout.fit');
         formData.append('data_type', 'fit');
         formData.append('name', options.name);
-        
+
         if (options.description) {
             formData.append('description', options.description);
         }
-        
+
         if (options.activityType) {
             formData.append('activity_type', options.activityType);
         }
-        
+
         if (options.trainer !== undefined) {
             formData.append('trainer', options.trainer ? '1' : '0');
         }
@@ -56,7 +56,7 @@ export async function uploadToStrava(
         const response = await fetch('https://www.strava.com/api/v3/uploads', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${accessToken}`,
+                Authorization: `Bearer ${accessToken}`,
             },
             body: formData,
         });
@@ -67,7 +67,7 @@ export async function uploadToStrava(
         }
 
         const data = await response.json();
-        
+
         // Strava returns an upload ID initially, then processes the file
         // The activity_id may be null initially
         return {
@@ -75,7 +75,6 @@ export async function uploadToStrava(
             uploadId: data.id,
             activityId: data.activity_id,
         };
-        
     } catch (error) {
         console.error('Strava upload error:', error);
         return {
@@ -91,12 +90,12 @@ export async function uploadToStrava(
  */
 export async function checkUploadStatus(
     uploadId: number,
-    accessToken: string
+    accessToken: string,
 ): Promise<{ status: string; activityId?: number; error?: string }> {
     try {
         const response = await fetch(`https://www.strava.com/api/v3/uploads/${uploadId}`, {
             headers: {
-                'Authorization': `Bearer ${accessToken}`,
+                Authorization: `Bearer ${accessToken}`,
             },
         });
 
@@ -105,7 +104,7 @@ export async function checkUploadStatus(
         }
 
         const data = await response.json();
-        
+
         return {
             status: data.status, // 'pending', 'processing', 'ready', or 'error'
             activityId: data.activity_id,

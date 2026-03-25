@@ -6,9 +6,8 @@
 
 import type { StravaTokens } from '../auth/stravaAuth';
 import type { RideWithGPSTokens } from '../auth/ridewithgpsAuth';
-import { refreshStravaToken } from '../auth/stravaAuth';
-import { uploadToStrava, type StravaUploadOptions, type StravaUploadResult } from './stravaUpload';
-import { uploadToRideWithGPS, type RideWithGPSUploadOptions, type RideWithGPSUploadResult } from './ridewithgpsUpload';
+import { uploadToStrava } from './stravaUpload';
+import { uploadToRideWithGPS } from './ridewithgpsUpload';
 
 export interface UploadOptions {
     name: string;
