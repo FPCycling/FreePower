@@ -37,7 +37,8 @@
     <Button onclick={handlePause}>Pause</Button>
     <Button kind="danger" onclick={handleReset}>Reset</Button>
     <Button onclick={handleStop}>Stop</Button>
+    <Button kind="minimal" onclick={() => currentTime.add(-10 * 1000)}>-10 sec</Button>
+    <Button kind="minimal" onclick={() => currentTime.add(-60 * 1000)}>-1 min</Button>
     <Button kind="minimal" onclick={() => currentTime.add(10 * 1000)}>+10 sec</Button>
     <Button kind="minimal" onclick={() => currentTime.add(60 * 1000)}>+1 min</Button>
-    <Button kind="minimal" onclick={() => currentTime.add(5 * 60 * 1000)}>+5 min</Button>
 </div>

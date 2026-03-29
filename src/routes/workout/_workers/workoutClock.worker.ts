@@ -2,7 +2,10 @@
 
 import type { WorkerCommand, WorkerEvent } from './types';
 
+// Display clock — tracks position in the workout plan, can seek forward/backward
 let baseElapsed = 0;
+// Recording clock — tracks actual riding time, only ever goes forward
+let recordingBaseElapsed = 0;
 let runStartWallTime: number | null = null;
 let interval: ReturnType<typeof setInterval> | null = null;
 let lastRecordingSecond = -1;
@@ -14,14 +17,21 @@ function getElapsed(): number {
     return baseElapsed;
 }
 
+function getRecordingElapsed(): number {
+    if (runStartWallTime !== null) {
+        return recordingBaseElapsed + (Date.now() - runStartWallTime);
+    }
+    return recordingBaseElapsed;
+}
+
 function tick(): void {
     const elapsedMs = getElapsed();
     self.postMessage({ type: 'tick', elapsedMs } as WorkerEvent);
 
-    const elapsedSeconds = Math.floor(elapsedMs / 1000);
-    if (elapsedSeconds > lastRecordingSecond) {
-        lastRecordingSecond = elapsedSeconds;
-        self.postMessage({ type: 'recordingTick', elapsedSeconds } as WorkerEvent);
+    const recordingSeconds = Math.floor(getRecordingElapsed() / 1000);
+    if (recordingSeconds > lastRecordingSecond) {
+        lastRecordingSecond = recordingSeconds;
+        self.postMessage({ type: 'recordingTick', elapsedSeconds: recordingSeconds } as WorkerEvent);
     }
 }
 
@@ -39,6 +49,7 @@ self.addEventListener('message', (e: MessageEvent<WorkerCommand>) => {
         case 'pause':
             if (runStartWallTime !== null) {
                 baseElapsed = getElapsed();
+                recordingBaseElapsed = getRecordingElapsed();
                 runStartWallTime = null;
             }
             if (interval !== null) {
@@ -53,13 +64,14 @@ self.addEventListener('message', (e: MessageEvent<WorkerCommand>) => {
                 interval = null;
             }
             baseElapsed = 0;
+            recordingBaseElapsed = 0;
             runStartWallTime = null;
             lastRecordingSecond = -1;
             self.postMessage({ type: 'tick', elapsedMs: 0 } as WorkerEvent);
             break;
 
         case 'add':
-            baseElapsed += cmd.ms;
+            baseElapsed = Math.max(0, baseElapsed + cmd.ms);
             tick();
             break;
     }
