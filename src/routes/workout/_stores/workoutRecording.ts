@@ -3,7 +3,7 @@ import { heartRate } from './heartRate';
 import { trainerMetrics } from './trainer';
 import { currentWatts } from './currentWorkout';
 import { riderWeightKg } from '../../../stores/userSettings';
-import { powerToSpeed } from '../../../utils/workoutUtils';
+import { simulateSpeed, resetSpeed } from './speedSimulator';
 
 export interface WorkoutDataPoint {
     timestamp: number; // seconds since workout start
@@ -55,15 +55,7 @@ function collectDataPoint(elapsedSeconds: number): void {
 
     _workoutRecording.update((state) => {
         const power = $trainerMetrics.power >= 0 ? $trainerMetrics.power : 0;
-        const baseSpeed = powerToSpeed(power, $riderWeightKg);
-
-        // Add realism to speed: ERG mode locks power, so without variability speed is
-        // perfectly constant. Apply a cadence-based factor (higher cadence / lighter
-        // gear = marginally faster at same power) plus a small random jitter.
-        const cadence = $trainerMetrics.cadence >= 0 ? $trainerMetrics.cadence : 0;
-        const cadenceFactor = cadence > 0 ? Math.max(0.98, Math.min(1.02, 1 + (cadence - 90) * 0.0015)) : 1;
-        const randomFactor = 1 + (Math.random() - 0.5) * 0.016; // ±0.8% jitter
-        const speed = baseSpeed * cadenceFactor * randomFactor;
+        const speed = simulateSpeed(power, $riderWeightKg);
 
         const prevDistance = state.dataPoints[state.dataPoints.length - 1]?.distance ?? 0;
 
@@ -116,6 +108,7 @@ export function stopRecording(): void {
 }
 
 export function resetRecording(): void {
+    resetSpeed();
     _workoutRecording.set(initialState);
 }
 

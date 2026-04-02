@@ -1,38 +1,5 @@
 import type { WorkoutStep, FlattenedStep } from '../types/workout';
 
-// CdA for road bike, hoods position (m²)
-const CDA = 0.32;
-// Air density at sea level (kg/m³)
-const RHO = 1.225;
-// Rolling resistance coefficient
-const CRR = 0.004;
-// Gravity (m/s²)
-const G = 9.81;
-
-/**
- * Convert power output to virtual speed using cycling physics.
- * Solves P = k_aero * v³ + k_roll * v via Newton-Raphson.
- * @param power Watts
- * @param riderMassKg Total rider + bike mass (kg)
- * @returns Speed in m/s
- */
-export function powerToSpeed(power: number, riderMassKg: number): number {
-    if (power <= 0) return 0;
-
-    const kAero = 0.5 * CDA * RHO;
-    const kRoll = CRR * riderMassKg * G;
-
-    let v = 5; // initial guess: ~18 km/h
-    for (let i = 0; i < 20; i++) {
-        const f = kAero * v * v * v + kRoll * v - power;
-        const df = 3 * kAero * v * v + kRoll;
-        const delta = f / df;
-        v -= delta;
-        if (Math.abs(delta) < 1e-6) break;
-    }
-    return Math.max(0, v);
-}
-
 /**
  * Recursively flatten workout steps, expanding repetitions
  * @param steps Array of workout steps (potentially nested with reps)

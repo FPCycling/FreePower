@@ -71,7 +71,16 @@ self.addEventListener('message', (e: MessageEvent<WorkerCommand>) => {
             break;
 
         case 'add':
-            baseElapsed = Math.max(0, baseElapsed + cmd.ms);
+            if (runStartWallTime !== null) {
+                // Clock is running — snapshot both clocks before adjusting
+                const now = Date.now();
+                const delta = now - runStartWallTime;
+                recordingBaseElapsed = recordingBaseElapsed + delta;
+                baseElapsed = Math.max(0, baseElapsed + delta + cmd.ms);
+                runStartWallTime = now;
+            } else {
+                baseElapsed = Math.max(0, baseElapsed + cmd.ms);
+            }
             tick();
             break;
     }
