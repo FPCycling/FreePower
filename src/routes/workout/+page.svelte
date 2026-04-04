@@ -15,9 +15,18 @@
     let showCompleteOverlay = $state(false);
     let previousStatus: RecordingStatus | null = null;
 
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+        const status = $workoutRecording.status;
+        if (status === RecordingStatus.Recording || status === RecordingStatus.Paused) {
+            e.preventDefault();
+        }
+    }
+
     onMount(async () => {
         initWorkoutOrchestrator();
         Chart = (await import('./_components/Chart.svelte')).default;
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
 
         currentWatts.subscribe(() => {
             if ($currentTime > 0) {
@@ -44,7 +53,10 @@
         showCompleteOverlay = false;
     }
 
-    onDestroy(destroyWorkoutOrchestrator);
+    onDestroy(() => {
+        destroyWorkoutOrchestrator();
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+    });
 </script>
 
 <div class="flex flex-wrap items-center justify-between gap-2">
