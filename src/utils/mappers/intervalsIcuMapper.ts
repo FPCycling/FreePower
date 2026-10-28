@@ -11,7 +11,7 @@ export function mapIntervalsIcuWorkout(plannedWorkout: PlannedWorkout): GenericW
     }
 
     // Flatten the nested workout steps
-    const flatSteps = flattenWorkoutSteps(plannedWorkout.workout_doc.steps);
+    const flatSteps = flattenWorkoutSteps(plannedWorkout.workout_doc.steps, plannedWorkout.workout_doc.zoneTimes);
 
     // Convert to intervals with cumulative start times
     const intervals: WorkoutInterval[] = [];
