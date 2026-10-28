@@ -26,7 +26,7 @@
     // Flatten workout steps for visualization
     const flatSteps = $derived(() => {
         if (!workout.workout_doc?.steps) return [];
-        return flattenWorkoutSteps(workout.workout_doc.steps);
+        return flattenWorkoutSteps(workout.workout_doc.steps, workout.workout_doc.zoneTimes);
     });
 
     // Calculate total duration for width calculations
