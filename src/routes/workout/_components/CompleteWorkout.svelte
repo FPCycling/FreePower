@@ -1,9 +1,9 @@
 <script lang="ts">
     import Button from '../../../components/design/buttons/Button.svelte';
-    import { stravaTokens, ridewithgpsTokens } from '../../../stores/userSettings';
+    import { stravaTokens, ridewithgpsTokens, intervalsIcuApiKey } from '../../../stores/userSettings';
     import { getRecordingData, getStartTime } from '../_stores/workoutRecording';
     import { generateFitFile, calculateWorkoutStats, downloadFitFile } from '../../../utils/fitFileGenerator';
-    import { uploadWorkout, type PlatformUploadResult } from '../../../utils/upload/uploadService';
+    import { uploadWorkout, type PlatformUploadResult, type UploadPlatform } from '../../../utils/upload/uploadService';
     import { formatTime } from '../../../utils/time';
 
     interface Props {
@@ -20,6 +20,7 @@
     // Form state
     let workoutName = $state(`Indoor Ride - ${new Date().toLocaleDateString()}`);
     let description = $state('');
+    let uploadToIntervalsIcu = $state(!!$intervalsIcuApiKey);
     let uploadToStrava = $state(!!$stravaTokens);
     let uploadToRideWithGPS = $state(!!$ridewithgpsTokens);
     let activityType: 'VirtualRide' | 'Ride' = $state('VirtualRide');
@@ -46,6 +47,10 @@
 
             // Prepare platforms for upload
             const platforms: any = {};
+
+            if (uploadToIntervalsIcu && $intervalsIcuApiKey) {
+                platforms.intervalsicu = { apiKey: $intervalsIcuApiKey };
+            }
 
             if (uploadToStrava && $stravaTokens) {
                 platforms.strava = {
@@ -83,7 +88,7 @@
 
                 if (!result.allSuccessful) {
                     const failures = result.results.filter((r) => !r.success);
-                    uploadError = failures.map((f) => `${f.platform}: ${f.error}`).join(', ');
+                    uploadError = failures.map((f) => `${platformLabels[f.platform]}: ${f.error}`).join(', ');
                 }
             } else {
                 // No platforms selected, just close
@@ -102,6 +107,12 @@
             isUploading = false;
         }
     }
+
+    const platformLabels: Record<UploadPlatform, string> = {
+        intervalsicu: 'Intervals.icu',
+        strava: 'Strava',
+        ridewithgps: 'RideWithGPS',
+    };
 
     function handleClose() {
         if (!isUploading) {
@@ -230,6 +241,13 @@
                     <div class="text-sm font-medium mb-2">Upload to:</div>
 
                     <div class="space-y-2">
+                        {#if $intervalsIcuApiKey}
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" bind:checked={uploadToIntervalsIcu} class="w-4 h-4" />
+                                <span>Intervals.icu</span>
+                            </label>
+                        {/if}
+
                         {#if $stravaTokens}
                             <label class="flex items-center gap-2 cursor-pointer">
                                 <input type="checkbox" bind:checked={uploadToStrava} class="w-4 h-4" />
@@ -252,10 +270,10 @@
                             </label>
                         {/if}
 
-                        {#if !$stravaTokens && !$ridewithgpsTokens}
+                        {#if !$intervalsIcuApiKey && !$stravaTokens && !$ridewithgpsTokens}
                             <div class="text-sm text-gray-500">
-                                No upload services connected. Connect Strava or RideWithGPS in the user menu to upload
-                                workouts.
+                                No upload services connected. Connect Intervals.icu, Strava or RideWithGPS in the user
+                                menu to upload workouts.
                             </div>
                         {/if}
                     </div>
@@ -274,7 +292,7 @@
                 <Button onclick={exportFitFile} class="bg-gray-200 dark:bg-neutral-700">Export .FIT File</Button>
                 <Button onclick={handleClose} class="bg-gray-200 dark:bg-neutral-700">Close</Button>
                 <Button onclick={handleSaveAndUpload}>
-                    {uploadToStrava || uploadToRideWithGPS ? 'Save & Upload' : 'Close'}
+                    {uploadToIntervalsIcu || uploadToStrava || uploadToRideWithGPS ? 'Save & Upload' : 'Close'}
                 </Button>
             </div>
         {/if}
@@ -310,7 +328,7 @@
                                     rel="noopener noreferrer"
                                     class="text-blue-600 hover:underline block"
                                 >
-                                    View on {result.platform === 'strava' ? 'Strava' : 'RideWithGPS'}
+                                    View on {platformLabels[result.platform]}
                                 </a>
                             {/if}
                         {/each}
