@@ -4,11 +4,18 @@
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { plannedWorkouts } from '../stores/plannedWorkouts';
-    import { intervalsIcuApiKey } from '../stores/userSettings';
+    import { intervalsIcuApiKey, upcomingWorkoutsView, type UpcomingWorkoutsView } from '../stores/userSettings';
     import { fetchUpcomingWorkouts } from '../utils/intervalsIcuApi';
+    import { addDays, startOfWeek, toDateKey } from '../utils/calendar';
     import WorkoutTile from '../components/WorkoutTile/WorkoutTile.svelte';
+    import WorkoutCalendar from '../components/WorkoutCalendar/WorkoutCalendar.svelte';
     import Button from '../components/design/buttons/Button.svelte';
     import type { PlannedWorkout } from '../types/workout';
+
+    const VIEWS: { value: UpcomingWorkoutsView; label: string }[] = [
+        { value: 'list', label: 'List' },
+        { value: 'calendar', label: 'Calendar' },
+    ];
 
     let files = $state<string[]>([]);
     let isFetchingWorkouts = $state(false);
@@ -41,17 +48,16 @@
 
         isFetchingWorkouts = true;
         try {
-            // Get today's date in ISO format (YYYY-MM-DD)
-            const today = new Date().toISOString().split('T')[0];
-            // Get date 30 days from now
-            const newest = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            // From the start of this week, so the calendar also shows earlier days of the week
+            const today = new Date();
+            const oldest = toDateKey(startOfWeek(today));
+            const newest = toDateKey(addDays(today, 30));
 
-            const workouts = await fetchUpcomingWorkouts(apiKey, today, newest);
+            const workouts = await fetchUpcomingWorkouts(apiKey, oldest, newest);
 
-            // Filter only WORKOUT category and limit to 7
-            const filteredWorkouts: PlannedWorkout[] = workouts
-                .filter((w: PlannedWorkout) => w.category === 'WORKOUT' && w.workout_doc)
-                .slice(0, 7);
+            const filteredWorkouts: PlannedWorkout[] = workouts.filter(
+                (w: PlannedWorkout) => w.category === 'WORKOUT' && w.workout_doc,
+            );
 
             plannedWorkouts.set(filteredWorkouts);
         } catch (error) {
@@ -61,8 +67,13 @@
         }
     }
 
-    // Get workouts to display (limit to 7)
-    const displayWorkouts = $derived($plannedWorkouts.slice(0, 7));
+    // List view: next 7 workouts from today on
+    const displayWorkouts = $derived(
+        $plannedWorkouts
+            .filter((w) => w.start_date_local.slice(0, 10) >= toDateKey(new Date()))
+            .sort((a, b) => a.start_date_local.localeCompare(b.start_date_local))
+            .slice(0, 7),
+    );
 </script>
 
 <h2 class="font-bold mb-5">Upload MRC file to begin</h2>
@@ -76,14 +87,40 @@
 </div>
 
 <div class="mt-10">
-    <div class="flex items-center justify-between mb-5">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
         <h2 class="font-bold">Upcoming Workouts</h2>
-        <Button onclick={fetchPlannedWorkouts}>
-            {isFetchingWorkouts ? 'Fetching...' : 'Fetch Workouts'}
-        </Button>
+        <div class="flex items-center gap-3">
+            <div
+                class="inline-flex rounded-sm bg-neutral-300 dark:bg-neutral-900 p-1"
+                role="group"
+                aria-label="Workouts layout"
+            >
+                {#each VIEWS as view (view.value)}
+                    <button
+                        type="button"
+                        class="px-3 py-1.5 text-sm font-medium rounded-sm transition-colors {$upcomingWorkoutsView ===
+                        view.value
+                            ? 'bg-white text-neutral-1000 shadow-sm dark:bg-neutral-700 dark:text-white'
+                            : 'text-neutral-700 hover:text-neutral-1000 dark:text-neutral-400 dark:hover:text-white'}"
+                        aria-pressed={$upcomingWorkoutsView === view.value}
+                        onclick={() => upcomingWorkoutsView.set(view.value)}
+                    >
+                        {view.label}
+                    </button>
+                {/each}
+            </div>
+            <Button onclick={fetchPlannedWorkouts}>
+                {isFetchingWorkouts ? 'Fetching...' : 'Fetch Workouts'}
+            </Button>
+        </div>
     </div>
 
-    {#if displayWorkouts.length > 0}
+    {#if $upcomingWorkoutsView === 'calendar'}
+        <WorkoutCalendar workouts={$plannedWorkouts} />
+        {#if $plannedWorkouts.length === 0}
+            <p class="mt-4 text-neutral-600">No planned workouts yet. Click "Fetch Workouts" to load them.</p>
+        {/if}
+    {:else if displayWorkouts.length > 0}
         <div class="workouts-grid">
             {#each displayWorkouts as workout (workout.id)}
                 <WorkoutTile {workout} />

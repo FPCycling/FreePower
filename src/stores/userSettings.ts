@@ -64,6 +64,25 @@ intervalsIcuApiKey.subscribe((apiKey) => {
     }
 });
 
+// Upcoming workouts layout
+export type UpcomingWorkoutsView = 'list' | 'calendar';
+
+let initialUpcomingWorkoutsView: UpcomingWorkoutsView = 'list';
+
+if (typeof window !== 'undefined' && window.localStorage) {
+    if (localStorage.getItem('upcomingWorkoutsView') === 'calendar') {
+        initialUpcomingWorkoutsView = 'calendar';
+    }
+}
+
+export const upcomingWorkoutsView = writable<UpcomingWorkoutsView>(initialUpcomingWorkoutsView);
+
+upcomingWorkoutsView.subscribe((view) => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('upcomingWorkoutsView', view);
+    }
+});
+
 // Debug availability
 let initialDebugAvailable = false;
 
