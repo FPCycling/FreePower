@@ -2,10 +2,7 @@
     import type { PlannedWorkout } from '../../types/workout';
     import { flattenWorkoutSteps, getStepColor } from '../../utils/workoutUtils';
     import { userFtp } from '../../stores/userSettings';
-    import { mapIntervalsIcuWorkout } from '../../utils/mappers/intervalsIcuMapper';
-    import { writableCurrentWorkout } from '../../routes/workout/_stores/currentWorkout';
-    import { goto } from '$app/navigation';
-    import { resolve } from '$app/paths';
+    import { startPlannedWorkout } from '../../utils/startPlannedWorkout';
 
     interface Props {
         workout: PlannedWorkout;
@@ -94,13 +91,7 @@
 
     // Handle clicking the workout tile to select it
     function handleWorkoutClick() {
-        try {
-            const genericWorkout = mapIntervalsIcuWorkout(workout);
-            writableCurrentWorkout.set(genericWorkout);
-            goto(resolve('/workout'));
-        } catch (error) {
-            console.error('Failed to load workout:', error);
-        }
+        startPlannedWorkout(workout);
     }
 
     // Handle keyboard navigation
