@@ -73,3 +73,46 @@ export async function getAthleteProfile(apiKey: string) {
 
     return await response.json();
 }
+
+/**
+ * Upload a completed activity FIT file to intervals.icu
+ * Direct uploads stay visible in the API, unlike activities synced from Strava
+ * @param apiKey The user's intervals.icu API key
+ * @param fitBlob The FIT file to upload
+ * @returns The created activity id
+ */
+export async function uploadActivity(
+    apiKey: string,
+    fitBlob: Blob,
+    options: { name: string; description?: string },
+): Promise<string | undefined> {
+    if (!apiKey) {
+        throw new Error('API key is required');
+    }
+
+    const athleteId = '0';
+    const params = new URLSearchParams({ name: options.name });
+    if (options.description) params.append('description', options.description);
+
+    const url = `${BASE_URL}/athlete/${athleteId}/activities?${params.toString()}`;
+    const authHeader = 'Basic ' + btoa(`API_KEY:${apiKey}`);
+
+    const formData = new FormData();
+    formData.append('file', fitBlob, 'workout.fit');
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            Authorization: authHeader,
+            Accept: 'application/json',
+        },
+        body: formData,
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to upload activity: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.activities?.[0]?.id;
+}
