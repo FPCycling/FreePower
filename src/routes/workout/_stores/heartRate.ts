@@ -2,6 +2,7 @@
 
 import { derived, writable } from 'svelte/store';
 import { parseHeartRate } from '../_bluetooth/heartRate';
+import { createDeviceConnection } from '../_bluetooth/deviceConnection';
 import { debugMode } from './debugMode';
 
 const _heartRate = writable<number>(-1);
@@ -14,35 +15,17 @@ export const heartRate = derived([_heartRate, debugMode], ([$_heartRate, $_debug
     return $_heartRate;
 });
 
-const _hrConnected = writable(false);
+const hrDevice = createDeviceConnection('heartRate', 'heart_rate', async (service) => {
+    const characteristic = await service.getCharacteristic('heart_rate_measurement');
+    characteristic.addEventListener('characteristicvaluechanged', (event) => {
+        _heartRate.set(parseHeartRate((event.target as any).value));
+    });
+    await characteristic.startNotifications();
+});
 
-export const hrConnected = derived(
-    [_hrConnected, debugMode],
-    ([$connected, $debugMode]) => $connected || $debugMode.enabled,
+export const hrConnection = derived([hrDevice.state, debugMode], ([$state, $debugMode]) =>
+    $debugMode.enabled ? 'connected' : $state,
 );
 
-export function handlePairHrClick() {
-    navigator.bluetooth
-        .requestDevice({ filters: [{ services: ['heart_rate'] }] })
-        .then((device) => {
-            device.addEventListener('gattserverdisconnected', () => _hrConnected.set(false));
-            return device.gatt?.connect();
-        })
-        .then((server) => {
-            return server?.getPrimaryService('heart_rate');
-        })
-        .then((service) => {
-            return service?.getCharacteristic('heart_rate_measurement');
-        })
-        .then((characteristic) => {
-            characteristic?.addEventListener('characteristicvaluechanged', (event) => {
-                _heartRate.set(parseHeartRate((event.target as any).value));
-            });
-
-            return characteristic?.startNotifications();
-        })
-        .then((characteristic) => _hrConnected.set(characteristic !== undefined))
-        .catch((error) => {
-            console.error(error);
-        });
-}
+export const handlePairHrClick = hrDevice.pair;
+export const reconnectHr = hrDevice.reconnect;
