@@ -6,9 +6,12 @@
 
     interface Props {
         workout: PlannedWorkout;
+        /** Show the workout name instead of its date, with an optional summary after the duration */
+        heading?: 'date' | 'name';
+        summary?: string;
     }
 
-    let { workout }: Props = $props();
+    let { workout, heading = 'date', summary }: Props = $props();
 
     // Parse and format the date
     const workoutDate = $derived(() => {
@@ -84,7 +87,7 @@
         const hours = Math.floor(total / 3600);
         const minutes = Math.floor((total % 3600) / 60);
         if (hours > 0) {
-            return `${hours}h ${minutes}m`;
+            return minutes ? `${hours}h ${minutes}m` : `${hours}h`;
         }
         return `${minutes}m`;
     });
@@ -105,8 +108,8 @@
 
 <div class="workout-tile" onclick={handleWorkoutClick} onkeydown={handleKeyDown} role="button" tabindex="0">
     <div class="workout-header">
-        <h3 class="workout-title">{workoutDate()}</h3>
-        <p class="workout-subtitle">{formattedTotalDuration()}</p>
+        <h3 class="workout-title">{heading === 'name' ? workout.name : workoutDate()}</h3>
+        <p class="workout-subtitle">{formattedTotalDuration()}{summary ? ` · ${summary}` : ''}</p>
     </div>
 
     <div class="workout-visual">
