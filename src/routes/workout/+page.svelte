@@ -5,8 +5,8 @@
     import Controls from './_components/Controls.svelte';
     import Stats from './_components/Stats.svelte';
     import CoachNote from './_components/CoachNote.svelte';
-    import { handlePairHrClick, hrConnected } from './_stores/heartRate';
-    import { handlePairTrainerClick, trainerConnected } from './_stores/trainer';
+    import { handlePairHrClick, hrConnection, reconnectHr } from './_stores/heartRate';
+    import { handlePairTrainerClick, reconnectTrainer, trainerConnection } from './_stores/trainer';
     import CompleteWorkout from './_components/CompleteWorkout.svelte';
     import DeviceChip from './_components/DeviceChip.svelte';
     import { workoutRecording, RecordingStatus } from './_stores/workoutRecording';
@@ -25,6 +25,8 @@
 
     onMount(async () => {
         initWorkoutOrchestrator();
+        reconnectTrainer();
+        reconnectHr();
         Chart = (await import('./_components/Chart.svelte')).default;
 
         window.addEventListener('beforeunload', handleBeforeUnload);
@@ -66,10 +68,10 @@
         <DeviceChip
             label="Trainer"
             pairLabel="Pair trainer"
-            connected={$trainerConnected}
+            state={$trainerConnection}
             onclick={handlePairTrainerClick}
         />
-        <DeviceChip label="HR" pairLabel="Pair HR" connected={$hrConnected} onclick={handlePairHrClick} />
+        <DeviceChip label="HR" pairLabel="Pair HR" state={$hrConnection} onclick={handlePairHrClick} />
     </div>
 </div>
 <CoachNote />
