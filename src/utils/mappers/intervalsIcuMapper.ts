@@ -46,6 +46,23 @@ export function mapIntervalsIcuWorkout(plannedWorkout: PlannedWorkout): GenericW
     return {
         name: plannedWorkout.name,
         description: plannedWorkout.description,
+        coachNote: extractCoachNote(plannedWorkout.description),
         intervals: dedupedIntervals,
     };
+}
+
+/**
+ * Free text written above the step lines of an Intervals.icu description.
+ * Paragraphs are kept until the first one that contains a step ("- 10m 60%").
+ */
+export function extractCoachNote(description?: string): string | undefined {
+    if (!description) return undefined;
+
+    const noteParagraphs: string[] = [];
+    for (const paragraph of description.trim().split(/\n\s*\n/)) {
+        if (/^\s*-/m.test(paragraph)) break;
+        noteParagraphs.push(paragraph.trim());
+    }
+
+    return noteParagraphs.join('\n\n') || undefined;
 }

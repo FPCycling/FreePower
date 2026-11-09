@@ -4,6 +4,7 @@
     import { playSound } from '../../utils/sounds';
     import Controls from './_components/Controls.svelte';
     import Stats from './_components/Stats.svelte';
+    import CoachNote from './_components/CoachNote.svelte';
     import { handlePairHrClick } from './_stores/heartRate';
     import { handlePairTrainerClick } from './_stores/trainer';
     import CompleteWorkout from './_components/CompleteWorkout.svelte';
@@ -68,6 +69,7 @@
         <Button onclick={handlePairHrClick}>Pair HR</Button>
     </div>
 </div>
+<CoachNote />
 <Stats />
 
 {#if Chart}

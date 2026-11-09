@@ -7,6 +7,8 @@ export interface GenericWorkout {
     /** Workout metadata */
     name: string;
     description?: string;
+    /** Coach directions shown during the workout */
+    coachNote?: string;
 
     /** Workout intervals - each representing a power target over time */
     intervals: WorkoutInterval[];
