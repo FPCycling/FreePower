@@ -174,3 +174,16 @@ autoUploadEnabled.subscribe((value) => {
         localStorage.setItem('autoUploadEnabled', value.toString());
     }
 });
+
+// First-run welcome card. Users who already set up Intervals.icu skip it.
+export const welcomeDismissed = writable<boolean>(
+    typeof window !== 'undefined' &&
+        (window.localStorage?.getItem('welcomeDismissed') === 'true' ||
+            !!window.localStorage?.getItem('intervalsIcuApiKey')),
+);
+
+welcomeDismissed.subscribe((dismissed) => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('welcomeDismissed', `${dismissed}`);
+    }
+});

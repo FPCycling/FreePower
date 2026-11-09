@@ -4,12 +4,19 @@
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { plannedWorkouts } from '../stores/plannedWorkouts';
-    import { intervalsIcuApiKey, upcomingWorkoutsView, type UpcomingWorkoutsView } from '../stores/userSettings';
+    import {
+        intervalsIcuApiKey,
+        upcomingWorkoutsView,
+        welcomeDismissed,
+        type UpcomingWorkoutsView,
+    } from '../stores/userSettings';
     import { fetchUpcomingWorkouts } from '../utils/intervalsIcuApi';
     import { addDays, startOfWeek, toDateKey } from '../utils/calendar';
     import WorkoutTile from '../components/WorkoutTile/WorkoutTile.svelte';
     import WorkoutCalendar from '../components/WorkoutCalendar/WorkoutCalendar.svelte';
     import Button from '../components/design/buttons/Button.svelte';
+    import Welcome from '../components/Welcome/Welcome.svelte';
+    import { STARTER_WORKOUTS } from '../utils/starterWorkouts';
     import type { PlannedWorkout } from '../types/workout';
 
     const VIEWS: { value: UpcomingWorkoutsView; label: string }[] = [
@@ -76,60 +83,84 @@
     );
 </script>
 
-<h2 class="font-bold mb-5">Upload MRC file to begin</h2>
+{#if !$welcomeDismissed}
+    <Welcome />
+{/if}
 
-<input type="file" multiple onchange={handleFileChange} name="filename" />
+{#if $intervalsIcuApiKey}
+    <section class="mb-10">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+            <h2 class="font-bold">Upcoming Workouts</h2>
+            <div class="flex items-center gap-3">
+                <div
+                    class="inline-flex rounded-sm bg-neutral-300 dark:bg-neutral-900 p-1"
+                    role="group"
+                    aria-label="Workouts layout"
+                >
+                    {#each VIEWS as view (view.value)}
+                        <button
+                            type="button"
+                            class="px-3 py-1.5 text-sm font-medium rounded-sm transition-colors {$upcomingWorkoutsView ===
+                            view.value
+                                ? 'bg-white text-neutral-1000 shadow-sm dark:bg-neutral-700 dark:text-white'
+                                : 'text-neutral-700 hover:text-neutral-1000 dark:text-neutral-400 dark:hover:text-white'}"
+                            aria-pressed={$upcomingWorkoutsView === view.value}
+                            onclick={() => upcomingWorkoutsView.set(view.value)}
+                        >
+                            {view.label}
+                        </button>
+                    {/each}
+                </div>
+                <Button onclick={fetchPlannedWorkouts}>
+                    {isFetchingWorkouts ? 'Fetching...' : 'Fetch Workouts'}
+                </Button>
+            </div>
+        </div>
 
-<div class="mt-5">
-    {#each files as file (file)}
-        <button class="bg-pink-300 p-2" onclick={() => handleFileSelected(file)}> Select as current workout </button>
-    {/each}
-</div>
-
-<div class="mt-10">
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <h2 class="font-bold">Upcoming Workouts</h2>
-        <div class="flex items-center gap-3">
-            <div
-                class="inline-flex rounded-sm bg-neutral-300 dark:bg-neutral-900 p-1"
-                role="group"
-                aria-label="Workouts layout"
-            >
-                {#each VIEWS as view (view.value)}
-                    <button
-                        type="button"
-                        class="px-3 py-1.5 text-sm font-medium rounded-sm transition-colors {$upcomingWorkoutsView ===
-                        view.value
-                            ? 'bg-white text-neutral-1000 shadow-sm dark:bg-neutral-700 dark:text-white'
-                            : 'text-neutral-700 hover:text-neutral-1000 dark:text-neutral-400 dark:hover:text-white'}"
-                        aria-pressed={$upcomingWorkoutsView === view.value}
-                        onclick={() => upcomingWorkoutsView.set(view.value)}
-                    >
-                        {view.label}
-                    </button>
+        {#if $upcomingWorkoutsView === 'calendar'}
+            <WorkoutCalendar workouts={$plannedWorkouts} />
+            {#if $plannedWorkouts.length === 0}
+                <p class="mt-4 text-neutral-600">No planned workouts yet. Click "Fetch Workouts" to load them.</p>
+            {/if}
+        {:else if displayWorkouts.length > 0}
+            <div class="workouts-grid">
+                {#each displayWorkouts as workout (workout.id)}
+                    <WorkoutTile {workout} />
                 {/each}
             </div>
-            <Button onclick={fetchPlannedWorkouts}>
-                {isFetchingWorkouts ? 'Fetching...' : 'Fetch Workouts'}
-            </Button>
-        </div>
-    </div>
-
-    {#if $upcomingWorkoutsView === 'calendar'}
-        <WorkoutCalendar workouts={$plannedWorkouts} />
-        {#if $plannedWorkouts.length === 0}
-            <p class="mt-4 text-neutral-600">No planned workouts yet. Click "Fetch Workouts" to load them.</p>
+        {:else}
+            <p class="text-gray-500">No upcoming workouts. Click "Fetch Workouts" to load them.</p>
         {/if}
-    {:else if displayWorkouts.length > 0}
-        <div class="workouts-grid">
-            {#each displayWorkouts as workout (workout.id)}
-                <WorkoutTile {workout} />
-            {/each}
-        </div>
-    {:else}
-        <p class="text-gray-500">No upcoming workouts. Click "Fetch Workouts" to load them.</p>
+    </section>
+{/if}
+
+<section class="mb-10">
+    <h2 class="font-bold mb-5">Starter workouts</h2>
+    <div class="workouts-grid">
+        {#each STARTER_WORKOUTS as starter (starter.workout.id)}
+            <WorkoutTile workout={starter.workout} heading="name" summary={starter.summary} />
+        {/each}
+    </div>
+    {#if !$intervalsIcuApiKey}
+        <p class="mt-5 text-sm text-neutral-600 dark:text-neutral-400">
+            Plan your training in Intervals.icu? Add your API key in settings to ride your calendar here.
+        </p>
     {/if}
-</div>
+</section>
+
+<section class="mb-10">
+    <h2 class="font-bold mb-5">Load an MRC file</h2>
+
+    <input type="file" multiple onchange={handleFileChange} name="filename" />
+
+    <div class="mt-5">
+        {#each files as file (file)}
+            <button class="bg-pink-300 p-2" onclick={() => handleFileSelected(file)}>
+                Select as current workout
+            </button>
+        {/each}
+    </div>
+</section>
 
 <style>
     .workouts-grid {
