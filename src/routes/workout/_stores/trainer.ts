@@ -21,16 +21,28 @@ export const trainerMetrics = derived([_trainerMetrics, debugMode], ([$_trainerM
     return $_trainerMetrics;
 });
 
+const _trainerConnected = writable(false);
+
+export const trainerConnected = derived(
+    [_trainerConnected, debugMode],
+    ([$connected, $debugMode]) => $connected || $debugMode.enabled,
+);
+
 let ergCharacteristic: BluetoothRemoteGATTCharacteristic;
 
 export async function handlePairTrainerClick() {
-    const service = await navigator.bluetooth
-        .requestDevice({ filters: [{ services: ['cycling_power'] }] })
-        .then((device) => device.gatt!.connect())
-        .then((server) => server.getPrimaryService('cycling_power'));
+    try {
+        const device = await navigator.bluetooth.requestDevice({ filters: [{ services: ['cycling_power'] }] });
+        device.addEventListener('gattserverdisconnected', () => _trainerConnected.set(false));
+        const server = await device.gatt!.connect();
+        const service = await server.getPrimaryService('cycling_power');
 
-    await listenToMeasurements(service);
-    await listenToControl(service);
+        await listenToMeasurements(service);
+        await listenToControl(service);
+        _trainerConnected.set(true);
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 async function listenToMeasurements(service: BluetoothRemoteGATTService) {

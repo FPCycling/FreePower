@@ -5,10 +5,10 @@
     import Controls from './_components/Controls.svelte';
     import Stats from './_components/Stats.svelte';
     import CoachNote from './_components/CoachNote.svelte';
-    import { handlePairHrClick } from './_stores/heartRate';
-    import { handlePairTrainerClick } from './_stores/trainer';
+    import { handlePairHrClick, hrConnected } from './_stores/heartRate';
+    import { handlePairTrainerClick, trainerConnected } from './_stores/trainer';
     import CompleteWorkout from './_components/CompleteWorkout.svelte';
-    import Button from '../../components/design/buttons/Button.svelte';
+    import DeviceChip from './_components/DeviceChip.svelte';
     import { workoutRecording, RecordingStatus } from './_stores/workoutRecording';
     import { initWorkoutOrchestrator, destroyWorkoutOrchestrator } from './_stores/workoutOrchestrator';
 
@@ -61,12 +61,15 @@
 </script>
 
 <div class="flex flex-wrap items-center justify-between gap-2">
-    <div>
-        <Controls />
-    </div>
-    <div>
-        <Button class="mr-3" onclick={handlePairTrainerClick}>Pair Trainer</Button>
-        <Button onclick={handlePairHrClick}>Pair HR</Button>
+    <Controls />
+    <div class="flex gap-2">
+        <DeviceChip
+            label="Trainer"
+            pairLabel="Pair trainer"
+            connected={$trainerConnected}
+            onclick={handlePairTrainerClick}
+        />
+        <DeviceChip label="HR" pairLabel="Pair HR" connected={$hrConnected} onclick={handlePairHrClick} />
     </div>
 </div>
 <CoachNote />

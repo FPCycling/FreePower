@@ -14,10 +14,20 @@ export const heartRate = derived([_heartRate, debugMode], ([$_heartRate, $_debug
     return $_heartRate;
 });
 
+const _hrConnected = writable(false);
+
+export const hrConnected = derived(
+    [_hrConnected, debugMode],
+    ([$connected, $debugMode]) => $connected || $debugMode.enabled,
+);
+
 export function handlePairHrClick() {
     navigator.bluetooth
         .requestDevice({ filters: [{ services: ['heart_rate'] }] })
-        .then((device) => device.gatt?.connect())
+        .then((device) => {
+            device.addEventListener('gattserverdisconnected', () => _hrConnected.set(false));
+            return device.gatt?.connect();
+        })
         .then((server) => {
             return server?.getPrimaryService('heart_rate');
         })
@@ -29,8 +39,9 @@ export function handlePairHrClick() {
                 _heartRate.set(parseHeartRate((event.target as any).value));
             });
 
-            characteristic?.startNotifications();
+            return characteristic?.startNotifications();
         })
+        .then((characteristic) => _hrConnected.set(characteristic !== undefined))
         .catch((error) => {
             console.error(error);
         });
