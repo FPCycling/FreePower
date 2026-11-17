@@ -55,7 +55,7 @@ export async function exchangeCodeForToken(code: string): Promise<StravaTokens> 
         access_token: data.access_token,
         refresh_token: data.refresh_token,
         expires_at: data.expires_at,
-        athlete_id: data.athlete?.id?.toString(),
+        athlete_id: data.athlete_id,
     };
 }
 
