@@ -6,6 +6,7 @@
  */
 
 import { getValidAccessToken, type StravaTokens } from '../auth/stravaAuth';
+import { readStravaId } from '../stravaIds';
 
 export interface StravaUploadOptions {
     name: string;
@@ -16,9 +17,9 @@ export interface StravaUploadOptions {
 
 export interface StravaUploadResult {
     success: boolean;
-    activityId?: number;
+    activityId?: string;
     error?: string;
-    uploadId?: number;
+    uploadId?: string;
 }
 
 /**
@@ -66,14 +67,15 @@ export async function uploadToStrava(
             throw new Error(errorData.message || `Upload failed with status ${response.status}`);
         }
 
-        const data = await response.json();
+        const raw = await response.text();
+        const data = JSON.parse(raw);
 
         // Strava returns an upload ID initially, then processes the file
         // The activity_id may be null initially
         return {
             success: true,
-            uploadId: data.id,
-            activityId: data.activity_id,
+            uploadId: readStravaId(data, 'id', raw),
+            activityId: readStravaId(data, 'activity_id', raw),
         };
     } catch (error) {
         console.error('Strava upload error:', error);
@@ -89,9 +91,9 @@ export async function uploadToStrava(
  * Useful for polling after initial upload since processing takes time
  */
 export async function checkUploadStatus(
-    uploadId: number,
+    uploadId: string,
     accessToken: string,
-): Promise<{ status: string; activityId?: number; error?: string }> {
+): Promise<{ status: string; activityId?: string; error?: string }> {
     try {
         const response = await fetch(`https://www.strava.com/api/v3/uploads/${uploadId}`, {
             headers: {
@@ -103,11 +105,12 @@ export async function checkUploadStatus(
             throw new Error(`Failed to check upload status: ${response.status}`);
         }
 
-        const data = await response.json();
+        const raw = await response.text();
+        const data = JSON.parse(raw);
 
         return {
             status: data.status, // 'pending', 'processing', 'ready', or 'error'
-            activityId: data.activity_id,
+            activityId: readStravaId(data, 'activity_id', raw),
             error: data.error,
         };
     } catch (error) {

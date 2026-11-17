@@ -1,6 +1,7 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
+import { readStravaId } from '../../../../utils/stravaIds';
 
 /**
  * Exchange authorization code for access token
@@ -46,7 +47,7 @@ export const POST: RequestHandler = async ({ request }) => {
             access_token: data.access_token,
             refresh_token: data.refresh_token,
             expires_at: data.expires_at,
-            athlete: data.athlete,
+            athlete_id: readStravaId(data.athlete, 'id'),
         });
     } catch (error) {
         console.error('Error in Strava token exchange:', error);

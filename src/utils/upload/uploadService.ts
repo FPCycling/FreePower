@@ -83,9 +83,7 @@ export async function uploadWorkout(
                 platform: 'strava',
                 success: stravaResult.success,
                 activityId: stravaResult.activityId,
-                activityUrl: stravaResult.activityId
-                    ? `https://www.strava.com/activities/${stravaResult.activityId}`
-                    : undefined,
+                activityUrl: stravaResult.activityId ? getActivityUrl('strava', stravaResult.activityId) : undefined,
                 error: stravaResult.error,
             });
         } catch (error) {
