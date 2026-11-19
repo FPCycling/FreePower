@@ -2,7 +2,8 @@
     import { currentWatts, currentTime, currentWorkout, writableCurrentWorkout } from './_stores/currentWorkout';
     import { resolve } from '$app/paths';
     import { onDestroy, onMount } from 'svelte';
-    import { playSound } from '../../utils/sounds';
+    import { playFinishSound, playSound } from '../../utils/sounds';
+    import { getWorkoutEndMs, hasReachedWorkoutEnd } from '../../utils/workoutEnd';
     import Controls from './_components/Controls.svelte';
     import Stats from './_components/Stats.svelte';
     import CoachNote from './_components/CoachNote.svelte';
@@ -10,12 +11,14 @@
     import { handlePairTrainerClick, reconnectTrainer, trainerConnection } from './_stores/trainer';
     import CompleteWorkout from './_components/CompleteWorkout.svelte';
     import DeviceChip from './_components/DeviceChip.svelte';
-    import { workoutRecording, RecordingStatus } from './_stores/workoutRecording';
+    import { workoutRecording, RecordingStatus, resetRecording } from './_stores/workoutRecording';
     import { initWorkoutOrchestrator, destroyWorkoutOrchestrator } from './_stores/workoutOrchestrator';
 
     let Chart: any = $state();
     let showCompleteOverlay = $state(false);
     let previousStatus: RecordingStatus | null = null;
+    let previousTimeMs = 0;
+    const unsubscribers: (() => void)[] = [];
 
     function handleBeforeUnload(e: BeforeUnloadEvent) {
         const status = $workoutRecording.status;
@@ -32,11 +35,21 @@
 
         window.addEventListener('beforeunload', handleBeforeUnload);
 
-        currentWatts.subscribe(() => {
-            if ($currentTime > 0) {
-                playSound();
-            }
-        });
+        unsubscribers.push(
+            currentWatts.subscribe(() => {
+                // The finish sound replaces the bip at the end of the workout.
+                if ($currentTime > 0 && $currentTime < getWorkoutEndMs($currentWorkout)) {
+                    playSound();
+                }
+            }),
+            currentTime.subscribe((timeMs) => {
+                const reachedEnd = hasReachedWorkoutEnd(previousTimeMs, timeMs, getWorkoutEndMs($currentWorkout));
+                if (reachedEnd && $workoutRecording.status === RecordingStatus.Recording) {
+                    playFinishSound();
+                }
+                previousTimeMs = timeMs;
+            }),
+        );
     });
 
     // Watch for workout completion
@@ -57,7 +70,14 @@
         showCompleteOverlay = false;
     }
 
+    // The workout is saved, so the controls go back to Start.
+    function handleSaved() {
+        currentTime.reset();
+        resetRecording();
+    }
+
     onDestroy(() => {
+        unsubscribers.forEach((unsubscribe) => unsubscribe());
         destroyWorkoutOrchestrator();
         window.removeEventListener('beforeunload', handleBeforeUnload);
     });
@@ -97,5 +117,5 @@
 {/if}
 
 {#if showCompleteOverlay}
-    <CompleteWorkout onClose={handleCloseComplete} />
+    <CompleteWorkout onClose={handleCloseComplete} onSaved={handleSaved} />
 {/if}
