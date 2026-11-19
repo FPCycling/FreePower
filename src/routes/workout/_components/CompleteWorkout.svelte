@@ -8,9 +8,10 @@
 
     interface Props {
         onClose: () => void;
+        onSaved: () => void;
     }
 
-    let { onClose }: Props = $props();
+    let { onClose, onSaved }: Props = $props();
 
     // Get workout data
     const dataPoints = getRecordingData();
@@ -96,6 +97,7 @@
             }
 
             if (uploadSuccess) {
+                onSaved();
                 setTimeout(() => {
                     onClose();
                 }, 2000);
