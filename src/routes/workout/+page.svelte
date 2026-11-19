@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { currentWatts, currentTime, currentWorkout, writableCurrentWorkout } from './_stores/currentWorkout';
+    import { currentTime, currentWorkout, writableCurrentWorkout } from './_stores/currentWorkout';
     import { resolve } from '$app/paths';
     import { onDestroy, onMount } from 'svelte';
-    import { playFinishSound, playSound } from '../../utils/sounds';
-    import { getWorkoutEndMs, hasReachedWorkoutEnd } from '../../utils/workoutEnd';
+    import { playWorkoutCue } from '../../utils/sounds';
+    import { getWorkoutCues } from '../../utils/workoutCues';
     import Controls from './_components/Controls.svelte';
     import Stats from './_components/Stats.svelte';
     import CoachNote from './_components/CoachNote.svelte';
@@ -36,16 +36,9 @@
         window.addEventListener('beforeunload', handleBeforeUnload);
 
         unsubscribers.push(
-            currentWatts.subscribe(() => {
-                // The finish sound replaces the bip at the end of the workout.
-                if ($currentTime > 0 && $currentTime < getWorkoutEndMs($currentWorkout)) {
-                    playSound();
-                }
-            }),
             currentTime.subscribe((timeMs) => {
-                const reachedEnd = hasReachedWorkoutEnd(previousTimeMs, timeMs, getWorkoutEndMs($currentWorkout));
-                if (reachedEnd && $workoutRecording.status === RecordingStatus.Recording) {
-                    playFinishSound();
+                if ($workoutRecording.status === RecordingStatus.Recording) {
+                    getWorkoutCues($currentWorkout, previousTimeMs, timeMs).forEach(playWorkoutCue);
                 }
                 previousTimeMs = timeMs;
             }),
