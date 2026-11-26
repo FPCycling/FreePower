@@ -70,6 +70,19 @@ self.addEventListener('message', (e: MessageEvent<WorkerCommand>) => {
             self.postMessage({ type: 'tick', elapsedMs: 0 } as WorkerEvent);
             break;
 
+        // Sets both clocks of a paused ride, for a ride that continues in a new worker.
+        case 'restore':
+            if (interval !== null) {
+                clearInterval(interval);
+                interval = null;
+            }
+            baseElapsed = cmd.elapsedMs;
+            recordingBaseElapsed = cmd.recordingElapsedMs;
+            runStartWallTime = null;
+            lastRecordingSecond = Math.floor(cmd.recordingElapsedMs / 1000);
+            self.postMessage({ type: 'tick', elapsedMs: baseElapsed } as WorkerEvent);
+            break;
+
         case 'add':
             if (runStartWallTime !== null) {
                 // Clock is running — snapshot both clocks before adjusting

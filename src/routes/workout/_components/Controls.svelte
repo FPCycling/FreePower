@@ -30,8 +30,8 @@
         else if (status !== RecordingStatus.Completed) handleStart();
     }
 
+    // No confirm: the ride stays in the ride history.
     function handleReset() {
-        if ($workoutRecording.dataPointCount > 0 && !confirm('Reset this workout? Recorded data will be lost.')) return;
         currentTime.reset();
         resetRecording();
     }

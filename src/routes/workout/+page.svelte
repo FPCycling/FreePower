@@ -9,20 +9,27 @@
     import CoachNote from './_components/CoachNote.svelte';
     import { handlePairHrClick, hrConnection, reconnectHr } from './_stores/heartRate';
     import { handlePairTrainerClick, reconnectTrainer, trainerConnection } from './_stores/trainer';
-    import CompleteWorkout from './_components/CompleteWorkout.svelte';
     import DeviceChip from './_components/DeviceChip.svelte';
-    import { workoutRecording, RecordingStatus, resetRecording } from './_stores/workoutRecording';
+    import {
+        workoutRecording,
+        RecordingStatus,
+        resetRecording,
+        resumeRecording,
+        getActiveRide,
+        getRecordingData,
+    } from './_stores/workoutRecording';
     import { initWorkoutOrchestrator, destroyWorkoutOrchestrator } from './_stores/workoutOrchestrator';
+    import { rideDialog } from '../../stores/rides';
+    import { backupFailed } from '../../utils/rides/rideBackup';
 
     let Chart: any = $state();
-    let showCompleteOverlay = $state(false);
     let previousStatus: RecordingStatus | null = null;
     let previousTimeMs = 0;
     const unsubscribers: (() => void)[] = [];
 
+    // The ride is on disk, so a closed tab loses no data. The prompt only prevents an accidental stop.
     function handleBeforeUnload(e: BeforeUnloadEvent) {
-        const status = $workoutRecording.status;
-        if (status === RecordingStatus.Recording || status === RecordingStatus.Paused) {
+        if ($workoutRecording.status === RecordingStatus.Recording) {
             e.preventDefault();
         }
     }
@@ -49,22 +56,25 @@
     $effect(() => {
         const currentStatus = $workoutRecording.status;
 
-        // Show overlay when transitioning to Completed status
+        // Show the dialog when transitioning to Completed status
         if (currentStatus === RecordingStatus.Completed && previousStatus !== RecordingStatus.Completed) {
-            if ($workoutRecording.dataPointCount > 0) {
-                showCompleteOverlay = true;
+            const ride = getActiveRide();
+            if (ride && $workoutRecording.dataPointCount > 0) {
+                rideDialog.set({
+                    ride,
+                    points: getRecordingData(),
+                    justFinished: true,
+                    onResume: resumeRecording,
+                    onClose: handleRideDone,
+                });
             }
         }
 
         previousStatus = currentStatus;
     });
 
-    function handleCloseComplete() {
-        showCompleteOverlay = false;
-    }
-
-    // The workout is saved, so the controls go back to Start.
-    function handleSaved() {
+    // The ride is in the history, so the controls go back to Start.
+    function handleRideDone() {
         currentTime.reset();
         resetRecording();
     }
@@ -89,6 +99,15 @@
             <DeviceChip label="HR" pairLabel="Pair HR" state={$hrConnection} onclick={handlePairHrClick} />
         </div>
     </div>
+    {#if $backupFailed}
+        <p
+            class="mt-2 rounded-sm bg-red-100 dark:bg-red-950 px-3 py-2 text-sm text-red-700 dark:text-red-300"
+            role="alert"
+        >
+            Backup off: the browser cannot save this ride to disk. Keep this tab open until you upload or export the
+            ride.
+        </p>
+    {/if}
     <CoachNote />
     <Stats />
 
@@ -107,8 +126,4 @@
             >Pick a workout</a
         >
     </div>
-{/if}
-
-{#if showCompleteOverlay}
-    <CompleteWorkout onClose={handleCloseComplete} onSaved={handleSaved} />
 {/if}
