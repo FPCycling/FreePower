@@ -1,6 +1,7 @@
+import { get } from 'svelte/store';
 import type { WorkerEvent } from '../_workers/types';
-import { _setWorker, setCurrentTimeMs } from './currentWorkout';
-import { onRecordingTick } from './workoutRecording';
+import { _setWorker, currentTime, setCurrentTimeMs } from './currentWorkout';
+import { RecordingStatus, getElapsedSeconds, onRecordingTick, workoutRecording } from './workoutRecording';
 import { onDebugTick } from './debugMode';
 
 let _worker: Worker | null = null;
@@ -11,6 +12,10 @@ export function initWorkoutOrchestrator(): void {
     _worker = new Worker(new URL('../_workers/workoutClock.worker.ts', import.meta.url), { type: 'module' });
 
     _setWorker(_worker);
+
+    // A new worker starts at zero. A ride in memory continues from its own clocks.
+    if (get(workoutRecording).status === RecordingStatus.NotStarted) currentTime.reset();
+    else currentTime.restore(get(currentTime), getElapsedSeconds() * 1000);
 
     _worker.onmessage = (e: MessageEvent<WorkerEvent>) => {
         const msg = e.data;

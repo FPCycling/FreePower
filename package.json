@@ -30,6 +30,7 @@
         "eslint": "^9.18.0",
         "eslint-config-prettier": "^10.0.0",
         "eslint-plugin-svelte": "^3.0.0",
+        "fake-indexeddb": "^6.2.8",
         "globals": "^15.0.0",
         "postcss": "^8.4.32",
         "prettier": "^3.0.0",
@@ -48,6 +49,7 @@
         "@fontsource/fira-mono": "^5.0.0",
         "@lukeed/uuid": "^2.0.1",
         "@markw65/fit-file-writer": "^0.1.7",
-        "cookie": "^0.7.0"
+        "cookie": "^0.7.0",
+        "idb": "^8.0.4"
     }
 }

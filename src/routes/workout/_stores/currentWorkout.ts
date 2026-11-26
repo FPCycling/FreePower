@@ -59,8 +59,16 @@ export const currentTime = {
     subscribe: _currentTimeStore.subscribe,
     start: () => _worker?.postMessage({ type: 'start' }),
     pause: () => _worker?.postMessage({ type: 'pause' }),
-    reset: () => _worker?.postMessage({ type: 'reset' }),
+    // The store is set too, because the worker does not exist outside the workout page.
+    reset: () => {
+        _currentTimeStore.set(0);
+        _worker?.postMessage({ type: 'reset' });
+    },
     add: (addMs: number) => _worker?.postMessage({ type: 'add', ms: addMs }),
+    restore: (elapsedMs: number, recordingElapsedMs: number) => {
+        _currentTimeStore.set(elapsedMs);
+        _worker?.postMessage({ type: 'restore', elapsedMs, recordingElapsedMs });
+    },
 };
 
 export const currentWatts = derived([currentWorkout, currentTime], ([$currentWorkout, $currentTime]) => {

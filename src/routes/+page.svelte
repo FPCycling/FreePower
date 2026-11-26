@@ -1,8 +1,5 @@
 <script lang="ts">
     import { parseMrcFile } from '../utils/mappers/mrcMapper';
-    import { writableCurrentWorkout } from './workout/_stores/currentWorkout';
-    import { goto } from '$app/navigation';
-    import { resolve } from '$app/paths';
     import { plannedWorkouts } from '../stores/plannedWorkouts';
     import {
         intervalsIcuApiKey,
@@ -16,6 +13,8 @@
     import WorkoutCalendar from '../components/WorkoutCalendar/WorkoutCalendar.svelte';
     import Button from '../components/design/buttons/Button.svelte';
     import Welcome from '../components/Welcome/Welcome.svelte';
+    import RidesBanner from '../components/Rides/RidesBanner.svelte';
+    import { openWorkout } from '../utils/startPlannedWorkout';
     import { STARTER_WORKOUTS } from '../utils/starterWorkouts';
     import type { PlannedWorkout } from '../types/workout';
 
@@ -43,8 +42,7 @@
     }
 
     async function handleFileSelected(file: string) {
-        writableCurrentWorkout.set(parseMrcFile(file));
-        goto(resolve('/workout'));
+        openWorkout(parseMrcFile(file));
     }
 
     async function fetchPlannedWorkouts() {
@@ -86,6 +84,8 @@
 {#if !$welcomeDismissed}
     <Welcome />
 {/if}
+
+<RidesBanner />
 
 {#if $intervalsIcuApiKey}
     <section class="mb-10">
