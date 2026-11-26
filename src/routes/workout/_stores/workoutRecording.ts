@@ -5,6 +5,7 @@ import { currentTime, currentWatts, writableCurrentWorkout } from './currentWork
 import { riderWeightKg } from '../../../stores/userSettings';
 import { simulateSpeed, resetSpeed } from './speedSimulator';
 import { calculateWorkoutStats } from '../../../utils/fitFileGenerator';
+import { powerProfile } from '../../../utils/rides/powerProfile';
 import { attachRide, queueFinish, queueSave, releaseRide } from '../../../utils/rides/rideBackup';
 import { EMPTY_STATS, defaultRideName } from '../../../utils/rides/rideRules';
 import type { StoredRide } from '../../../utils/rides/types';
@@ -64,6 +65,7 @@ function rideSnapshot(state: WorkoutRecordingState): StoredRide | null {
         elapsedSeconds: state.elapsedTime,
         planElapsedMs: get(currentTime),
         stats: state.dataPoints.length > 0 ? calculateWorkoutStats(state.dataPoints) : EMPTY_STATS,
+        powerProfile: powerProfile(state.dataPoints),
     };
 }
 

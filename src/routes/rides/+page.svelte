@@ -2,7 +2,10 @@
     import { resolve } from '$app/paths';
     import Button from '../../components/design/buttons/Button.svelte';
     import ExternalLink from '../../components/design/links/ExternalLink.svelte';
+    import WorkoutProfile from '../../components/WorkoutProfile/WorkoutProfile.svelte';
     import { rides, type RideListItem } from '../../stores/rides';
+    import { userFtp } from '../../stores/userSettings';
+    import { profileSteps } from '../../utils/rides/powerProfile';
     import {
         downloadRide,
         finishRide,
@@ -68,35 +71,42 @@
                 <li
                     class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-md bg-white dark:bg-neutral-900 px-5 py-4 shadow-sm"
                 >
-                    <div class="min-w-0">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <h3 class="truncate font-bold">{ride.name}</h3>
-                            {#if status}
-                                <span class="rounded-sm px-2 py-0.5 text-xs font-medium {status.classes}"
-                                    >{status.label}</span
-                                >
-                            {/if}
-                            {#each uploadChips(ride) as chip (chip.platform)}
-                                {#if chip.upload.ok && chip.upload.activityUrl}
-                                    <ExternalLink
-                                        class="rounded-sm px-2 py-0.5 text-xs font-medium hover:underline {GOOD}"
-                                        href={chip.upload.activityUrl}>✓ {chip.label}</ExternalLink
-                                    >
-                                {:else if chip.upload.ok}
-                                    <span class="rounded-sm px-2 py-0.5 text-xs font-medium {GOOD}">✓ {chip.label}</span
-                                    >
-                                {:else}
-                                    <span
-                                        class="rounded-sm px-2 py-0.5 text-xs font-medium {BAD}"
-                                        title={chip.upload.error}>✕ {chip.label} failed</span
+                    <div class="flex w-full min-w-0 flex-col gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
+                        <div class="h-12 shrink-0 sm:w-32">
+                            <WorkoutProfile steps={profileSteps(ride.powerProfile, $userFtp || 200)} />
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h3 class="truncate font-bold">{ride.name}</h3>
+                                {#if status}
+                                    <span class="rounded-sm px-2 py-0.5 text-xs font-medium {status.classes}"
+                                        >{status.label}</span
                                     >
                                 {/if}
-                            {/each}
+                                {#each uploadChips(ride) as chip (chip.platform)}
+                                    {#if chip.upload.ok && chip.upload.activityUrl}
+                                        <ExternalLink
+                                            class="rounded-sm px-2 py-0.5 text-xs font-medium hover:underline {GOOD}"
+                                            href={chip.upload.activityUrl}>✓ {chip.label}</ExternalLink
+                                        >
+                                    {:else if chip.upload.ok}
+                                        <span class="rounded-sm px-2 py-0.5 text-xs font-medium {GOOD}"
+                                            >✓ {chip.label}</span
+                                        >
+                                    {:else}
+                                        <span
+                                            class="rounded-sm px-2 py-0.5 text-xs font-medium {BAD}"
+                                            title={chip.upload.error}>✕ {chip.label} failed</span
+                                        >
+                                    {/if}
+                                {/each}
+                            </div>
+                            <p class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+                                {formatDate(ride)} · {formatTime(ride.elapsedSeconds)} · {Math.round(
+                                    ride.stats.avgPower,
+                                )} W avg · {(ride.stats.totalDistance / 1000).toFixed(1)} km
+                            </p>
                         </div>
-                        <p class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                            {formatDate(ride)} · {formatTime(ride.elapsedSeconds)} · {Math.round(ride.stats.avgPower)} W avg
-                            · {(ride.stats.totalDistance / 1000).toFixed(1)} km
-                        </p>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2">

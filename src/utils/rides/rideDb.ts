@@ -39,6 +39,7 @@ function progressOf(ride: StoredRide): RideProgress {
         elapsedSeconds: ride.elapsedSeconds,
         planElapsedMs: ride.planElapsedMs,
         stats: ride.stats,
+        powerProfile: ride.powerProfile,
     };
 }
 

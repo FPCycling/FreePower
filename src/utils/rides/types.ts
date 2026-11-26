@@ -23,6 +23,7 @@ export interface StoredRide {
     activityType: 'VirtualRide' | 'Ride';
     plan?: GenericWorkout;
     stats: WorkoutStats;
+    powerProfile?: number[]; // average watts per slice, for the graph in the ride list
     uploads: Partial<Record<UploadPlatform, UploadRecord>>;
     lastUploadAt?: number;
     downloadedAt?: number;
@@ -37,4 +38,4 @@ export interface RideChunk {
 }
 
 /** The ride fields that the recording owns. All other fields belong to the upload dialog and the ride list. */
-export type RideProgress = Pick<StoredRide, 'status' | 'elapsedSeconds' | 'planElapsedMs' | 'stats'>;
+export type RideProgress = Pick<StoredRide, 'status' | 'elapsedSeconds' | 'planElapsedMs' | 'stats' | 'powerProfile'>;

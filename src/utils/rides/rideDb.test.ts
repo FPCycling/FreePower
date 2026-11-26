@@ -52,11 +52,11 @@ beforeEach(async () => {
 describe('saveRideProgress', () => {
     it('stores the ride and returns its chunks in order', async () => {
         await saveRideProgress(ride(), points(0, 5), 0);
-        await saveRideProgress(ride({ elapsedSeconds: 12 }), points(5, 12), 5);
+        await saveRideProgress(ride({ elapsedSeconds: 12, powerProfile: [200] }), points(5, 12), 5);
         // A chunk of a different ride must not leak in.
         await saveRideProgress(ride({ id: 'ride-10' }), points(100, 103), 0);
 
-        expect((await getRide('ride-1'))?.elapsedSeconds).toBe(12);
+        expect(await getRide('ride-1')).toMatchObject({ elapsedSeconds: 12, powerProfile: [200] });
         expect((await getRidePoints('ride-1')).map((p) => p.timestamp)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
     });
 

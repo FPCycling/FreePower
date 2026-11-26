@@ -68,6 +68,7 @@ describe('ride backup during a recording', () => {
         expect(stored?.status).toBe('finished');
         expect(stored?.points).toHaveLength(90);
         expect(stored?.stats.totalDuration).toBe(89);
+        expect(stored?.powerProfile).toHaveLength(64);
         expect(get(workoutRecording).status).toBe(RecordingStatus.NotStarted);
     });
 
